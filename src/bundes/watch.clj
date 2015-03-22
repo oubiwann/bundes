@@ -1,6 +1,5 @@
 (ns bundes.watch
-  (:require [bundes.unit           :as unit]
-            [clj-yaml.core         :refer [parse-string]]
+  (:require [clj-yaml.core         :refer [parse-string]]
             [org.spootnik.watchman :refer [watch! ->path]]
             [clojure.tools.logging :refer [info]]))
 
