@@ -1,4 +1,5 @@
-(ns bundes.scheduler
+(ns bundes.mesos.scheduler
+  (:require [clojure.tools.logging :refer [debug info]])
   (:import java.util.ArrayList
            org.apache.mesos.Scheduler
            org.apache.mesos.Protos$Filters

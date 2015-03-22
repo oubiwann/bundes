@@ -1,6 +1,7 @@
-(ns bundes.framework
+(ns bundes.mesos.framework
   (:gen-class)
-  (:require [bundes.scheduler :as sched])
+  (:require [clojure.tools.logging  :refer [info debug]]
+            [bundes.mesos.scheduler :as sched])
   (:import java.io.File
            org.apache.mesos.MesosSchedulerDriver
            org.apache.mesos.Protos$FrameworkInfo
@@ -28,14 +29,21 @@
       (.setPrincipal "bundesrat-framework-clojure")
       (.build)))
 
-(defn -main
-  [& [ip master]]
-  (let [uri       (-> (File. "./bundes-executor") .getCanonicalPath)
+(def driver-statuses
+  {Protos$Status/DRIVER_NOT_STARTED "DRIVER_NOT_STARTED"
+   Protos$Status/DRIVER_RUNNING     "DRIVER_RUNNING"
+   Protos$Status/DRIVER_ABORTED     "DRIVER_ABORTED"
+   Protos$Status/DRIVER_STOPPED     "DRIVER_STOPPED"})
+
+(defn run-framework
+  [master]
+  (let [uri       (.getCanonicalPath (File. "./bundes-executor"))
         executor  (build-executor-info uri)
         framework (build-framework-info)
         scheduler (sched/create executor)
         driver    (MesosSchedulerDriver. scheduler framework master)
         status    (.run driver)]
-
+    (info "mesos scheduler exited with status:" (driver-statuses status))
     (.stop driver)
-    (System/exit (if (= Protos$Status/DRIVER_STOPPED status) 0 1))))
+    ;; (System/exit (if (= Protos$Status/DRIVER_STOPPED status) 0 1))
+    ))
