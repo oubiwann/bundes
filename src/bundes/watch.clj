@@ -7,7 +7,7 @@
 (defn extract-id
   [{:keys [type path]}]
   (and (= type :path)
-       (if-let [[_ id] (re-find #"^(.*).ya?ml$" (str path))] (keyword id))))
+       (if-let [[_ id] (re-find #"^([^.].*).ya?ml$" (str path))] (keyword id))))
 
 (def load-unit
   (comp parse-string slurp str))
