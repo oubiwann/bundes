@@ -4,7 +4,7 @@
             [bundes.api             :as api]
             [bundes.watch           :as watch]
             [bundes.tick            :as tick]
-            [bundes.cluster         :as cluster]
+            [bundes.mesos           :as mesos]
             [bundes.decisions       :refer [decisions]]
             [bundes.effect          :refer [perform-effect]]
             [org.spootnik.logconfig :refer [start-logging!]]
@@ -35,21 +35,22 @@
         (System/exit 1)))))
 
 (defn converge-topology
-  [_ _ old new]
+  [system _ _ old new]
   (let [side-effects (decisions old new)]
-    (info "the world has changed!")
+    (info "the world has changed, converging!")
     (doseq [effect side-effects]
-      (perform-effect effect))))
+      ;; We merge the system map onto the action description
+      (perform-effect (merge system effect)))))
 
 (defn start!
   [config]
-  (cluster/cluster)
-  (tick/start-ticker!)
   (let [db      (atom {})
-        reg     (unit/atom-registry db)]
+        reg     (unit/atom-registry db)
+        system  {:ticker  (tick/create!)
+                 :cluster (mesos/framework! config)}]
     (watch/watch-units reg (:unit-dir config))
-    (converge-topology nil nil {} @db)
-    (add-watch db :synchronizer converge-topology)
+    (converge-topology system nil nil {} @db)
+    (add-watch db :synchronizer (partial converge-topology system))
     (api/start! (:service config) reg)))
 
 (defn -main
