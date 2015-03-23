@@ -25,10 +25,14 @@
            org.apache.mesos.Protos$ContainerInfo))
 
 (defprotocol ClusterManager
+  "Exposed interface with mesos, used by bundes.mesos to
+   to implement relevant side-effects for perform-effect."
   (start! [this unit])
   (stop! [this unit]))
 
 (defn add-unit
+  "Given a TaskInfo, add relevant details based on chosen
+   runtime."
   [builder {:keys [runtime] :as unit}]
   (if (= :docker (:type runtime))
     (.setContainerInfo builder (-> (Protos$ContainerInfo/newBuilder)
@@ -39,15 +43,18 @@
                                  (.build)))))
 
 (defn scalar-resource
+  "Utility function to create a scalar resource."
   [type val]
   (-> (Protos$Resource/newBuilder)
       (.setName type)
       (.setType Protos$Value$Type/SCALAR)
       (.setScalar (-> (Protos$Value$Scalar/newBuilder)
                       (.setValue val)
-                      (.build)))))
+                      (.build)))
+      (.build)))
 
 (defn resource-map
+  "Given an offer, yield a tuple of offer ID to resource map."
   [offer]
   (let [resources (seq (.getResourcesList offer))
         scalar?   (fn [r] (= (.getType r) Protos$Value$Type/SCALAR))
@@ -58,18 +65,21 @@
       :offer     offer}]))
 
 (defn offer-matches?
+  "Make sure an offer can satisfy our request."
   [cpu mem [id [{:keys [resources offer]}]]]
   (when (and (<= cpu (:cpus resources))
              (<= mem (:mem resources)))
     offer))
 
 (defn dispatch-task
+  "Find and appropriate offer for our task."
   [{:keys [resources] :as state} {:keys [runtime] :as unit}]
   (let [cpu        (or (:cpu runtime) 1)
         mem        (or (:mem runtime) 512)]
     (some (partial offer-matches? cpu mem) resources)))
 
 (defn launch-task
+  "Create and launch a TaskInfo"
   [state driver offer unit]
   (let [counter (:counter (swap! state update-in [:counter] inc))
         id      (format "bundesrat-task-%s-%s" (:id unit) counter)
@@ -93,6 +103,9 @@
     (.launchTasks driver (.getId offer) tasks filters)))
 
 (defn create!
+  "Create an instance of Scheduler and ClusterManager.
+   Updates from mesos get stored in an atom which is queried
+   during start! and stop! events."
   []
   (let [state (atom {:counter 0 :running {}})]
     (reify

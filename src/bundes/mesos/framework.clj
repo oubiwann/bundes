@@ -1,5 +1,7 @@
 (ns bundes.mesos.framework
-  (:gen-class)
+  "Simple facade to create and register a mesos framework.
+   The bulk of the functionality lies in the scheduler
+   namespace."
   (:require [clojure.tools.logging  :refer [info debug]]
             [bundes.mesos.scheduler :as sched])
   (:import java.io.File
@@ -9,8 +11,6 @@
            org.apache.mesos.Protos$ExecutorInfo
            org.apache.mesos.Protos$CommandInfo
            org.apache.mesos.Protos$Status))
-
-
 
 (defn build-framework-info
   []

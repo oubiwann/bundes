@@ -1,17 +1,26 @@
 (ns bundes.watch
+  "Facade around watchman to interact with the unit
+   registry. bundes.unit is not pulled in here, because
+   the interaction with the registry goes through
+   assoc! and dissoc!"
   (:require [clj-yaml.core         :refer [parse-string]]
             [org.spootnik.watchman :refer [watch! ->path]]
             [clojure.tools.logging :refer [info]]))
 
 (defn extract-id
+  "When faced with an appropriate path, yield the corresponding
+   unit ID."
   [{:keys [type path]}]
   (and (= type :path)
-       (if-let [[_ id] (re-find #"^([^.].*).ya?ml$" (str path))] (keyword id))))
+       (when-let [[_ id] (re-find #"^([^.].*).ya?ml$" (str path))]
+         (keyword id))))
 
 (def load-unit
+  "Load a YAML file from disk."
   (comp parse-string slurp str))
 
 (defn load-dir
+  "On first run, recurse down a directory and loads appropriate unit."
   [reg dir]
   (let [dir (java.io.File. dir)]
     (doseq [file  (.listFiles dir)
@@ -22,6 +31,7 @@
           (assoc! reg id (load-unit (->path (str file) []))))))))
 
 (defn watch-units
+  "Watch unit-dir and update registry accordingly."
   [reg dir]
   (load-dir reg dir)
   (watch!

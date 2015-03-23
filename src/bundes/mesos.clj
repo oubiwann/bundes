@@ -1,4 +1,5 @@
 (ns bundes.mesos
+  "Namespace which implements mesos related side-effects"
   (:require [bundes.effect          :refer [perform-effect]]
             [bundes.mesos.scheduler :refer [start! stop!]]
             [bundes.mesos.framework :refer [run-framework!]]
@@ -26,5 +27,6 @@
   (start! mesos unit))
 
 (defn framework!
+  "Start a mesos framework"
   [config]
   (run-framework! (:mesos config)))
