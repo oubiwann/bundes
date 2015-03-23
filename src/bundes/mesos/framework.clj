@@ -10,16 +10,7 @@
            org.apache.mesos.Protos$CommandInfo
            org.apache.mesos.Protos$Status))
 
-(defn build-executor-info
-  [uri]
-  (-> (Protos$ExecutorInfo/newBuilder)
-      (.setExecutorId (-> (Protos$ExecutorID/newBuilder)
-                          (.setValue "default")))
-      (.setCommand (-> (Protos$CommandInfo/newBuilder)
-                       (.setValue uri)))
-      (.setName "Bundesrat Executor (clojure)")
-      (.setSource "clojure_test")
-      (.build)))
+
 
 (defn build-framework-info
   []
@@ -35,15 +26,17 @@
    Protos$Status/DRIVER_ABORTED     "DRIVER_ABORTED"
    Protos$Status/DRIVER_STOPPED     "DRIVER_STOPPED"})
 
-(defn run-framework
+(defn run-framework!
   [master]
-  (let [uri       (.getCanonicalPath (File. "./bundes-executor"))
-        executor  (build-executor-info uri)
+  (let [scheduler (sched/create!)
         framework (build-framework-info)
-        scheduler (sched/create executor)
         driver    (MesosSchedulerDriver. scheduler framework master)
         status    (.run driver)]
-    (info "mesos scheduler exited with status:" (driver-statuses status))
-    (.stop driver)
-    ;; (System/exit (if (= Protos$Status/DRIVER_STOPPED status) 0 1))
-    ))
+
+    (future
+      (let [status (.run driver)]
+        (info "mesos scheduler exited with status:" (driver-statuses status))
+        ;; (System/exit (if (= Protos$Status/DRIVER_STOPPED status) 0 1))
+        (.stop driver)))
+
+    scheduler))
