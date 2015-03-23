@@ -1,9 +1,19 @@
+(def mesos-home (System/getenv "MESOS_HOME"))
+(def lib-path (format "-Djava.library.path=%s/src/.libs" mesos-home))
+
+(when (nil? mesos-home)
+  (binding [*out* *err*]
+    (println "You need to set an appropriate value for MESOS_HOME.")
+    (System/exit 1)))
+
+(println "Will extend library path with:" lib-path)
+
 (defproject bundes "0.3.0"
   :description "a simple init system for mesos"
   :url "https://github.com/pyr/bundes"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
-  :jvm-opts ["-Djava.library.path=/home/pyr/Code/github/mesos/src/.libs"]
+  :jvm-opts [~lib-path]
   :main bundes.main
   :dependencies [[org.clojure/clojure       "1.6.0"]
                  [org.clojure/tools.logging "0.3.1"]
