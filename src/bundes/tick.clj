@@ -15,17 +15,20 @@
 (defn tick-handler
   "When the scheduler ticks for a unit, just perform a new
    side-effect of type :one-off, which will be picked up by mesos"
-  [payload]
-  (let [id (-> payload :unit :id)]
+  [payload unit]
+  (let [id      (:id unit)
+        payload (merge payload unit)]
     (debug "ticking for:" id)
-    (t/task id (fn [_ _] (perform-effect (assoc payload :action :one-off))))))
+    (t/task id (fn [_ _] (perform-effect payload)))))
 
 (defmethod perform-effect :sched-add
-  [{:keys [ticker unit sched] :as payload}]
-  (debug "adding schedule:" sched "for unit: " (:id unit))
-  (c/schedule-task ticker (tick-handler payload) sched))
+  [{:keys [ticker units] :as payload}]
+  (doseq [{:keys [schedule id] :as unit} units]
+    (debug "adding schedule:" schedule "for unit: " (:id unit))
+    (c/schedule-task ticker (tick-handler payload unit) schedule)))
 
 (defmethod perform-effect :sched-del
-  [{:keys [ticker unit sched]}]
-  (debug "removing schedule:" sched "for unit: " (:id unit))
-  (c/unschedule-task ticker (:id unit)))
+  [{:keys [ticker units]}]
+  (doseq [{:keys [schedule id] :as unit} units]
+    (debug "removing schedule:" schedule "for unit: " (:id unit))
+    (c/unschedule-task ticker id)))
