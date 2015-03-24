@@ -37,9 +37,7 @@
 
 (defn show-resources
   [{:keys [resources]}]
-  (pr-str (reduce merge {} (map (juxt (comp #(.getValue %) key)
-                                      (comp :resources val))
-                                resources))))
+  (pr-str (map :resources  resources)))
 
 (defn resource-map
   "Given an offer, yield a tuple of offer ID to resource map."
@@ -47,12 +45,10 @@
   (let [resources (seq (.getResourcesList offer))
         scalar?   (fn [r] (= (.getType r) Protos$Value$Type/SCALAR))
         tuple     (fn [r] [(keyword (.getName r))
-
                            (-> r .getScalar .getValue)])]
 
     {:resources (reduce merge {} (map tuple (filter scalar? resources)))
-     :offer     offer}
-    [(-> offer .getId)]))
+     :offer     offer}))
 
 
 

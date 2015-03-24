@@ -88,7 +88,7 @@
 
 (defn offer-matches?
   "Make sure an offer can satisfy our request."
-  [cpus mem [id {:keys [resources offer]}]]
+  [cpus mem {:keys [resources offer]}]
   (debug "matching" (pr-str {:cpus cpus :mem mem}) "against" (pr-str resources))
   (when (and (<= cpus (:cpus resources))
              (<= mem (:mem resources)))
