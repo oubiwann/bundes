@@ -64,23 +64,22 @@
   (let [side-effects (decisions old new)]
     (info "the world has changed, converging!")
     (doseq [effect side-effects]
-      ;; We merge the system map onto the action description
       (perform-effect (merge system effect)))))
 
 (defn start!
   "This is the crux of the namespace, where everything gets started
    and glued together."
   [config]
-  (let [db      (atom {})                             ;; 1. Create an atom to
-                                                      ;;    hold config
-        reg     (unit/atom-registry db)               ;; 2. Mimick a transient
-        system  {:ticker  (tick/create!)              ;; 3. Start scheduler
-                 :cluster (mesos/framework! config)}] ;; 4. Register with mesos
-    (watch/watch-units reg (:unit-dir config))        ;; 5. Watch unit dir
-    (converge-topology system nil nil {} @db)         ;; 6. First converge
-    (add-watch db :synchronizer                       ;; 7. Watch for changes
-               (partial converge-topology system))    ;;
-    (api/start! (:service config) reg)))              ;; 8. Start HTTP API
+  (info "bundesrat: starting up.")
+  (let [db      (atom {})                            ;; 1. Hold config in atom
+        reg     (unit/atom-registry db)              ;; 2. Mimick a transient
+        system  {:ticker (tick/create!)              ;; 3. Start scheduler
+                 :mesos  (mesos/framework! config)}] ;; 4. Register with mesos
+    (watch/watch-units reg (:unit-dir config))       ;; 5. Watch unit dir
+    (converge-topology system nil nil {} @db)        ;; 6. First converge
+    (add-watch db :synchronizer                      ;; 7. Watch for changes
+               (partial converge-topology system))   ;;
+    (api/start! (:service config) reg)))             ;; 8. Start HTTP API
 
 (defn -main
   "Executable entry point, parse options, reads config and
