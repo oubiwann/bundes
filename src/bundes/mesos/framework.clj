@@ -21,13 +21,20 @@
            org.apache.mesos.Protos$ContainerInfo
            org.apache.mesos.Protos$ContainerInfo$Type
            org.apache.mesos.Protos$ContainerInfo$DockerInfo
+           org.apache.mesos.Protos$ContainerInfo$DockerInfo$PortMapping
            org.apache.mesos.Protos$Status))
+
 
 (defprotocol ClusterManager
   "Exposed interface with mesos, used by bundes.mesos to
    to implement relevant side-effects for perform-effect."
   (start! [this unit])
   (stop! [this unit]))
+
+(defn random-uuid
+  []
+  (str
+   (java.util.UUID/randomUUID)))
 
 (defn build-framework-info
   []
@@ -43,10 +50,23 @@
    Protos$Status/DRIVER_ABORTED     "DRIVER_ABORTED"
    Protos$Status/DRIVER_STOPPED     "DRIVER_STOPPED"})
 
+(defn docker-port-mappings
+  [builder port-mappings]
+  (doseq [{:keys [host container protocol]} port-mappings]
+    (.addPortMappings
+     builder
+     (-> (Protos$ContainerInfo$DockerInfo$PortMapping/newBuilder)
+         (.setHostPort (int host))
+         (.setContainerPort (int container))
+         (cond-> protocol (.setProtocol protocol))
+         (.build))))
+  builder)
+
 (defn docker-info
-  [{:keys [image] :as docker}]
+  [{:keys [image port-mappings] :as docker}]
   (-> (Protos$ContainerInfo$DockerInfo/newBuilder)
       (.setImage image)
+      (cond-> port-mappings (docker-port-mappings port-mappings))
       (.build)))
 
 (defn add-unit
@@ -74,44 +94,60 @@
              (<= mem (:mem resources)))
     offer))
 
-(defn dispatch-task
-  "Find and appropriate offer for our task."
-  [resources {:keys [runtime] :as unit}]
-  (let [cpus (or (:cpus runtime) 1)
-        mem  (or (:mem runtime) 512)]
-    (some (partial offer-matches? cpus mem) resources)))
+(defn adapt-offer
+  "We requested "
+  [cpus mem offer]
+  (-> offer
+      (update-in [:resources :cpus] (- cpus))
+      (update-in [:resources :mem] (- mem))))
 
-(defn launch-task
+(defn ->task
   "Create and launch a TaskInfo"
-  [state driver offer unit]
+  [slave-id unit]
   (debug "found offer, will launch task")
-  (let [counter (:counter (swap! state update-in [:counter] inc))
-        id      (format "bundesrat-task-%s-%s" (:id unit) counter)
+  (let [uuid    (random-uuid)
+        id      (format "bundesrat-task-%s-%s" (:id unit) uuid)
         mem     (or (some-> unit :runtime :mem) 512)
         cpus    (or (some-> unit :runtime :cpus) 1)
-        filters (-> (Protos$Filters/newBuilder)
-                    (.setRefuseSeconds 1)
-                    (.build))
         task-id (-> (Protos$TaskID/newBuilder)
-                    (.setValue (str counter))
-                    (.build))
-        task    (-> (Protos$TaskInfo/newBuilder)
-                    (.setName id)
-                    (.setTaskId task-id)
-                    (.setSlaveId (.getSlaveId offer))
-                    (.addResources (sched/scalar-resource "mem" mem))
-                    (.addResources (sched/scalar-resource "cpus" cpus))
-                    (add-unit unit)
-                    (.build))
-        tasks    (doto (ArrayList.) (.add task))]
-    (.launchTasks driver (.getId offer) tasks filters)
-    (swap! state update-in [:running] assoc (:id unit) task-id)
-    (swap! state update-in [:resources] dissoc (-> offer .getId))))
+                    (.setValue uuid)
+                    (.build))]
+    {:id   (:id unit)
+     :task (-> (Protos$TaskInfo/newBuilder)
+               (.setName id)
+               (.setTaskId task-id)
+               (.setSlaveId slave-id)
+               (.addResources (sched/scalar-resource "mem" mem))
+               (.addResources (sched/scalar-resource "cpus" cpus))
+               (add-unit unit)
+               (.build))}))
 
+(defn dispatch-task
+  "Find and appropriate offer for our task."
+  [{:keys [resources startq heldq] :as acc} {:keys [runtime] :as unit}]
+  (let [cpus          (or (:cpus runtime) 1)
+        mem           (or (:mem runtime) 512)
+        [small big]   (split-with (partial offer-matches? cpus mem) resources)
+        [offer & big] big]
+    (if offer
+      (-> acc
+          (assoc :resources (concat small [(adapt-offer cpus mem offer)] big))
+          (update-in [:startq (.getId offer)] conj
+                     (->task (-> offer :offer .getSlaveId) unit)))
+      (update-in acc [:heldq] conj unit))))
+
+(defn mk-filters
+  []
+  (-> (Protos$Filters/newBuilder) (.setRefuseSeconds 1) (.build)))
+
+(defn kill-task
+  [state driver id task-id]
+  (.killTask driver task-id)
+  (swap! state update-in [:running] dissoc id))
 
 (defn run-framework!
   [master]
-  (let [state     (atom {:counter 0 :running {}})
+  (let [state     (atom {:running {} :runq []})
         scheduler (sched/create! state)
         framework (build-framework-info)
         driver    (MesosSchedulerDriver. scheduler framework master)]
@@ -120,26 +156,29 @@
       (info "running mesos driver")
       (let [status (.run driver)]
         (info "mesos scheduler exited with status:" (driver-statuses status))
-        ;; (System/exit (if (= Protos$Status/DRIVER_STOPPED status) 0 1))
-        (.stop driver)))
+        (.stop driver)
+        (System/exit (if (= Protos$Status/DRIVER_STOPPED status) 0 1))))
+
     (info "mesos scheduler has been started, yielding back to main thread")
 
     (reify
       ;; Both cluster manager operation are either executed
       ;; immediately or get queued for later execution.
       ClusterManager
-      (start! [this unit]
-        (debug "in start for unit:" (pr-str unit))
+      (start! [this units]
         (let [{:keys [resources] :as snapshot} @state]
-          (debug "dispatching task" (:id unit))
-          (if-let [offer (dispatch-task resources unit)]
-            (launch-task state driver offer unit)
-            (debug "no offer found!" (pr-str {:unit unit :resources (sched/show-resources snapshot)})))))
-      (stop! [this unit]
-        (debug "stopping task" (:id unit))
-        (if-let [task-id (some-> @state :running (get (:id unit)))]
-          (do
-            (debug "found id!")
-            (.killTask driver task-id)
-            (swap! state update-in [:running] dissoc (:id unit)))
-          (debug "id not found, unit not running"))))))
+          (let [init    {:resources resources :startq [] :heldq []}
+                res     (reduce dispatch-task init units)
+                filters (mk-filters)]
+            (debug "got dispatch results" (pr-str res))
+            (doseq [{:keys [offer-id tasks]} (:startq res)]
+              (.launchTasks driver [offer-id] (map :task tasks) filters)
+              (doseq [{:keys [id task]} tasks]
+                (swap! state assoc-in [:running id] (.getTaskId task)))))))
+
+      (stop! [this units]
+        (doseq [unit units]
+          (debug "stopping task" (:id unit))
+          (if-let [task-id (some-> @state :running (get (:id unit)))]
+            (kill-task state driver (:id unit) task-id)
+            (debug "id not found, unit not running")))))))
