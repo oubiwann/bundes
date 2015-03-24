@@ -17,7 +17,7 @@
    side-effect of type :one-off, which will be picked up by mesos"
   [payload unit]
   (let [id      (:id unit)
-        payload (merge payload unit)]
+        payload (assoc (merge payload unit) :action :one-off)]
     (debug "ticking for:" id)
     (t/task id (fn [_ _] (perform-effect payload)))))
 
@@ -28,7 +28,7 @@
     (c/schedule-task ticker (tick-handler payload unit) schedule)))
 
 (defmethod perform-effect :sched-del
-  [{:keys [ticker units]}]
+  [{:keys [ticker units] :as payload}]
   (doseq [{:keys [schedule id] :as unit} units]
     (debug "removing schedule:" schedule "for unit: " (:id unit))
     (c/unschedule-task ticker id)))
