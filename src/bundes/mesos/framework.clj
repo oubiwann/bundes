@@ -170,7 +170,8 @@
           (let [init    {:resources resources :startq [] :heldq []}
                 res     (reduce dispatch-task init units)
                 filters (mk-filters)]
-            (debug "got dispatch results" (pr-str res))
+            (debug "got dispatch results" (select-keys res [:startq :heldq])
+                   (sched/show-resources res))
             (doseq [{:keys [offer-id tasks]} (:startq res)]
               (.launchTasks driver [offer-id] (map :task tasks) filters)
               (doseq [{:keys [id task]} tasks]
