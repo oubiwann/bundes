@@ -1,8 +1,7 @@
 (ns bundes.mesos
   "Namespace which implements mesos related side-effects"
   (:require [bundes.effect          :refer [perform-effect]]
-            [bundes.mesos.scheduler :refer [start! stop!]]
-            [bundes.mesos.framework :refer [run-framework!]]
+            [bundes.mesos.framework :refer [start! stop! run-framework!]]
             [clojure.tools.logging  :refer [debug info]]))
 
 (defmethod perform-effect :stop
