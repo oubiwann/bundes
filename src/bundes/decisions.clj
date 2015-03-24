@@ -53,8 +53,8 @@
   (let [val (get new k {})]
     (when (= :start (:status val))
       (if (= :batch (:type val))
-        {:action :sched-add :units [val]}
-        {:action :start     :units [val]}))))
+        {:action :sched-add :unit val}
+        {:action :start     :unit val}))))
 
 (defn del-map
   "If an old unit was in start state, return
@@ -63,8 +63,8 @@
   (let [val (get old k {})]
     (when (= :start (:status val))
       (if (= :batch (:type val))
-        {:action :sched-del :units [val]}
-        {:action :stop      :units [val]}))))
+        {:action :sched-del :unit val}
+        {:action :stop      :unit val}))))
 
 (defn group-effects
   "Group similar effects together"
