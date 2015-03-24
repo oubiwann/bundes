@@ -24,8 +24,6 @@
            org.apache.mesos.Protos$CommandInfo
            org.apache.mesos.Protos$ContainerInfo))
 
-
-
 (defn scalar-resource
   "Utility function to create a scalar resource."
   [type val]
@@ -49,10 +47,12 @@
   (let [resources (seq (.getResourcesList offer))
         scalar?   (fn [r] (= (.getType r) Protos$Value$Type/SCALAR))
         tuple     (fn [r] [(keyword (.getName r))
+
                            (-> r .getScalar .getValue)])]
-    [(-> offer .getId)
-     {:resources (reduce merge {} (map tuple (filter scalar? resources)))
-      :offer     offer}]))
+
+    {:resources (reduce merge {} (map tuple (filter scalar? resources)))
+     :offer     offer}
+    [(-> offer .getId)]))
 
 
 
@@ -77,13 +77,14 @@
 
     (resourceOffers [this driver offers]
       (debug "got resources offers, previous:" (show-resources @state))
-      (let [new-resources (reduce merge {} (map resource-map (seq offers)))]
-        (swap! state update-in [:resources] merge new-resources))
+      (let [new-resources (map resource-map (seq offers))]
+        (swap! state assoc :resources new-resources))
       (debug "updated resource map: " (show-resources @state)))
 
     (offerRescinded [this driver offer-id]
       (debug "offer rescinded:" (.getValue offer-id))
-      (swap! state update-in [:resources] dissoc offer-id)
+      (swap! state update-in [:resources] remove
+             (comp (partial = offer-id) #(.getId %) :offer))
       (debug "updated resource map: " (show-resources @state)))
 
     (statusUpdate [this driver status]
