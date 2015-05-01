@@ -15,6 +15,7 @@
       (assoc :id id)
       (update-in [:type] keyword)
       (update-in [:status] #(if % (keyword %) :start))
+;;      (update-in [:placement] )
       (update-in [:runtime :type] keyword)))
 
 (defn atom-registry
