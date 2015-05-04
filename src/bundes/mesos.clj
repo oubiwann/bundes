@@ -6,7 +6,7 @@
             [mesomatic.allocator       :refer [allocate-naively]]
             [bundes.effect             :refer [perform-effect]]
             [clojure.core.async        :refer [chan <! go] :as a]
-            [clojure.tools.logging     :refer [debug info]]))
+            [clojure.tools.logging     :refer [debug info error]]))
 
 (defmethod perform-effect :stop
   [{:keys [mesos units]}]
@@ -25,34 +25,87 @@
   (debug "one-off run for unit " (:id unit))
   (a/put! mesos {:type :start :units [unit]}))
 
+(defn profile->resources
+  [{:keys [mem cpus] :as profile}]
+  [{:type   :value-scalar
+    :name   "mem"
+    :scalar (or mem 128.0)
+    :role   "*"}
+   {:type   :value-scalar
+    :name   "cpus"
+    :scalar (or cpus 0.2)
+    :role   "*"}])
+
+(defn runtime->container
+  [{:keys [type docker] :as runtime}]
+  (when (= type :docker)
+    {:type   :container-type-docker
+     :docker (assoc docker :type :container-type-docker)}))
+
+(defn runtime->command
+  [{:keys [type command docker] :as runtime}]
+  (cond
+    (= type :command) {:value command :shell true}
+    (= type :docker)  {:shell false}))
+
 (defn unit->task-info
   "Convert a bundesrat unit into a suitable Mesos TaskInfo"
-  [unit]
-  unit)
+  [{:keys [runtime profile id] :as unit}]
+  {:name      id
+   :task-id   {:value id}
+   :resources (profile->resources profile)
+   :container (runtime->container runtime)
+   :command   (runtime->command runtime)
+   :count     (or (:count profile) 1)
+   :maxcol    (or (:maxco profile) 1)})
 
 (defmulti update-state (comp :type last vector))
 
+(defmethod update-state :registered
+  [state payload]
+  (info "framework registered")
+  state)
+
+(defmethod update-state :reregistered
+  [state payload]
+  (info "framework reregistered")
+  state)
+
+(defmethod update-state :disconnected
+  [state payload]
+  (info "framework disconnected")
+  state)
+
+(defmethod update-state :error
+  [state payload]
+  (error "got error on framework:" (pr-str payload))
+  state)
+
 (defmethod update-state :start
   [{:keys [driver offers] :as state} {:keys [units] :as payload}]
-  (info "start: " (pr-str payload))
-  (when-let [tasks (allocate-naively offers (map unit->task-info units))]
-    (doseq [[offer-id tasks] (group-by :offer-id tasks)]
-      (s/launch-tasks! driver offer-id tasks)))
+  (info "trying to start" (count units) "units")
+  (if-let [tasks (allocate-naively offers (map unit->task-info units))]
+    (doseq [[offer-id tasks] (group-by :offer-id tasks)
+            :let [tasks (mapv t/map->TaskInfo tasks)]]
+      (info "now starting tasks on offer" (pr-str offer-id) ":" (pr-str tasks))
+      (s/launch-tasks! driver offer-id tasks))
+    (error "no match found for workload" (pr-str units))
+    )
   state)
 
 (defmethod update-state :resource-offers
   [state payload]
-  (info "resource offers: " (pr-str payload))
-  state)
+  (info "updating resource offers with" (count (:offers payload)) "new offers")
+  (assoc state :offers (:offers payload)))
 
 (defmethod update-state :stop
   [state payload]
-  (info "stop!!")
+  (info "framework stopped")
   state)
 
 (defmethod update-state :offer-rescinded
   [state payload]
-  (info "offer rescinded!" (pr-str payload))
+  (info "offer rescinded: " (pr-str payload))
   state)
 
 (defmethod update-state :status-update
