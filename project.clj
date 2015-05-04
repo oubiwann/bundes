@@ -18,5 +18,5 @@
                  [ring/ring-defaults           "0.1.4"]
                  [ring/ring-core               "1.3.2"]
                  [ring/ring-json               "0.3.1"]
-                 [compojure                    "1.3.2"]
+                 [compojure                    "1.3.3"]
                  [clj-yaml                     "0.4.0"]])
