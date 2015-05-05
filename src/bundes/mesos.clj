@@ -42,24 +42,26 @@
   [{:keys [type docker] :as runtime}]
   (when (= type :docker)
     {:type   :container-type-docker
-     :docker (assoc docker :type :container-type-docker)}))
+     :docker (assoc docker :network :docker-network-bridge)}))
 
 (defn runtime->command
   [{:keys [type command docker] :as runtime}]
   (cond
-    (= type :command) {:value command :shell true}
-    (= type :docker)  {:shell false}))
+    (= type :command) {:shell true :value command}
+    (= type :docker)  {:shell false}
+    :else             (throw (ex-info "invalid unit" {:type type}))))
 
 (defn unit->task-info
   "Convert a bundesrat unit into a suitable Mesos TaskInfo"
   [{:keys [runtime profile id] :as unit}]
-  {:name      id
-   :task-id   {:value id}
-   :resources (profile->resources profile)
+  {:name      (format "bundesrat-task-%s-0" (name id))
+   :task-id   {:value (str (java.util.UUID/randomUUID))}
+   :resources (concat (profile->resources profile)
+                      (runtime->port-ranges runtime))
    :container (runtime->container runtime)
    :command   (runtime->command runtime)
    :count     (or (:count profile) 1)
-   :maxcol    (or (:maxco profile) 1)})
+   :maxcol    (or (:maxcol profile) 1)})
 
 (defmulti update-state (comp :type last vector))
 
@@ -85,19 +87,17 @@
 
 (defmethod update-state :start
   [{:keys [driver offers] :as state} {:keys [units] :as payload}]
-  (info "trying to start" (count units) "units")
   (if-let [tasks (allocate-naively offers (map unit->task-info units))]
-    (doseq [[offer-id tasks] (group-by :offer-id tasks)
-            :let [tasks (mapv t/map->TaskInfo tasks)]]
-      (info "now starting tasks on offer" (pr-str offer-id) ":" (pr-str tasks))
+    (doseq [[offer-id tasks] (group-by :offer-id tasks)]
+      (info "starting tasks on offer" (-> offer-id :value) ":" (pr-str tasks))
       (s/launch-tasks! driver offer-id tasks))
-    (error "no match found for workload" (pr-str units))
-    )
+    (error "no match found for workload" (pr-str units)))
   state)
 
 (defmethod update-state :resource-offers
   [state payload]
-  (info "updating resource offers with" (count (:offers payload)) "new offers")
+  (info "updating offers with" (count (:offers payload)) "new offers")
+  (debug "offers: " (pr-str (:offers payload)))
   (assoc state :offers (:offers payload)))
 
 (defmethod update-state :stop
@@ -126,9 +126,7 @@
   (let [master    (:mesos config)
         input     (chan 10)
         sched     (async/scheduler input)
-        framework (t/map->FrameworkInfo {:user ""
-                                         :name "Bundesrat Framework"
-                                         :principal "bundesrat-framework"})
+        framework {:user "" :name "bundesrat framework"}
         driver    (s/scheduler-driver sched framework master)]
     (s/start! driver)
     (a/reduce update-state {:driver driver} input)
