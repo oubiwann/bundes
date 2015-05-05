@@ -27,14 +27,16 @@
 
 (defn profile->resources
   [{:keys [mem cpus] :as profile}]
-  [{:type   :value-scalar
-    :name   "mem"
-    :scalar (or mem 128.0)
-    :role   "*"}
-   {:type   :value-scalar
-    :name   "cpus"
-    :scalar (or cpus 0.2)
-    :role   "*"}])
+  [{:type :value-scalar :name "mem"  :scalar (or mem 128.0)}
+   {:type :value-scalar :name "cpus" :scalar (or cpus 0.2)}])
+
+(defn runtime->port-ranges
+  [{:keys [type docker]}]
+  (when (and (= type :docker) (:port-mappings docker))
+    [{:type   :value-ranges
+      :name   "ports"
+      :ranges [{:begin 0
+                :end   (dec (count (:port-mappings docker)))}]}]))
 
 (defn runtime->container
   [{:keys [type docker] :as runtime}]
