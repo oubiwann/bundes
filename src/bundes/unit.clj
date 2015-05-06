@@ -13,8 +13,8 @@
   [id unit]
   (-> unit
       (assoc :id id)
-      (update-in [:type] keyword)
-      (update-in [:status] #(if % (keyword %) :start))
+      (update :type keyword)
+      (update :status #(if % (keyword %) :start))
       (update-in [:runtime :type] keyword)))
 
 (defn atom-registry
