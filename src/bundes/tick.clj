@@ -17,8 +17,9 @@
    side-effect of type :one-off, which will be picked up by mesos"
   [payload unit]
   (let [id      (:id unit)
-        payload (assoc (merge payload unit) :action :one-off)]
-    (debug "ticking for:" id)
+        payload {:unit unit
+                 :mesos (:mesos payload)
+                 :action :one-off}]
     (t/task id (fn [_ _] (perform-effect payload)))))
 
 (defmethod perform-effect :sched-add
