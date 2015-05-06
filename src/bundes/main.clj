@@ -18,10 +18,10 @@
      through a multimethod."
   (:gen-class)
   (:require [bundes.unit            :as unit]
+            [bundes.mesos           :as mesos]
             [bundes.api             :as api]
             [bundes.watch           :as watch]
             [bundes.tick            :as tick]
-            [bundes.mesos           :as mesos]
             [bundes.decisions       :refer [decisions]]
             [bundes.effect          :refer [perform-effect]]
             [org.spootnik.logconfig :refer [start-logging!]]
@@ -73,13 +73,14 @@
   (info "bundesrat: starting up.")
   (let [db     (atom {})                            ;; 1. Hold config in atom
         reg    (unit/atom-registry db)              ;; 2. Mimick a transient
-        system {:ticker (tick/create!)              ;; 3. Start scheduler
-                :mesos  (mesos/framework! config)}] ;; 4. Register with mesos
-    (watch/watch-units reg (:unit-dir config))      ;; 5. Watch unit dir
-    (converge-topology system nil nil {} @db)       ;; 6. First converge
-    (add-watch db :synchronizer                     ;; 7. Watch for changes
+        mesos  (mesos/framework! config)            ;; 3. Register with mesos
+        ticker (tick/create!)                       ;; 4. Start scheduler
+        system {:ticker ticker :mesos mesos}]       ;; 5. Prepare system
+    (watch/watch-units reg (:unit-dir config))      ;; 6. Watch unit dir
+    (converge-topology system nil nil {} @db)       ;; 7. First converge
+    (add-watch db :synchronizer                     ;; 8. Watch for changes
                (partial converge-topology system))  ;;
-    (api/start! (:service config) reg)))            ;; 8. Start HTTP API
+    (api/start! (:service config) reg)))            ;; 9. Start HTTP API
 
 (defn -main
   "Executable entry point, parse options, reads config and
