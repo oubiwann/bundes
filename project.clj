@@ -34,14 +34,23 @@
                  [figwheel                     "0.3.1"]
                  [sablono                      "0.3.4"]
                  [secretary                    "1.2.3"]
+                 [bidi                         "1.18.11"]
                  [racehub/om-bootstrap         "0.5.0"]]
-  :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"]
+  :clean-targets ^{:protect false} ["resources/public/js/compiled"
+                                    "target"
+                                    "figwheel_server.log"]
   :cljsbuild {:builds [{:id "dev"
                         :source-paths ["src/cljs"]
                         :figwheel true
                         :compiler {:main       bundes.client
                                    :asset-path "js/compiled/out"
                                    :output-to  "resources/public/js/compiled/app.js"
-                                   :output-dir "resources/public/js/compiled/out"
-                                   :source-map-timestamp true}}]}
+                                   :output-dir "resources/public/js/compiled/app"
+                                   :source-map-timestamp true}}
+                       {:id "min"
+                        :source-paths ["src/cljs"]
+                        :compiler {:main bundes.client
+                                   :output-to "resources/public/js/compiled/app.js"
+                                   :optimizations :advanced
+                                   :pretty-print false}}]}
   :figwheel {:css-dirs ["resources/public/css"]})
