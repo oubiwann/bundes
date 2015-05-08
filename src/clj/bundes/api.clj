@@ -16,6 +16,7 @@
     (PUT "/units/:id/suspend" [id]   (response (u/suspend reg (keyword id))))
     (PUT "/units/:id/unsuspend" [id] (response (u/unsuspend reg (keyword id))))
     (PUT "/units/:id" [id]           (response))
+    (route/resources                 "/")
     (route/not-found                 "<html><h2>404</h2></html>"))
    (json/wrap-json-body)
    (json/wrap-json-response)))
