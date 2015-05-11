@@ -33,14 +33,22 @@
       (d/tr
        (d/td (d/a {:href (str "#/unit/" (name id))} (name id)))
        (d/td (some-> unit :type name))
-       (d/td (some-> unit :runtime :type name))))))
+       (d/td (some-> unit :runtime :type name))
+       (d/td (b/button-group
+              {}
+              (b/button {} "Suspend")
+              (b/button {} "Trigger")))))))
 
 (defn unit-list
   [app owner]
   (reify om/IRender
     (render [this]
       (table {:striped? true :bordered? true :hover? true}
-             (d/thead (d/tr (d/th "Unit") (d/th "Type") (d/th "Runtime")))
+             (d/thead (d/tr
+                       (d/th "Unit")
+                       (d/th "Type")
+                       (d/th "Runtime")
+                       (d/th "Actions")))
              (apply d/tbody (om/build-all unit-row (:units app)))))))
 
 (defn unit-details
