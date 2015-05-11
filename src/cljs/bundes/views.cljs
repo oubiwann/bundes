@@ -1,6 +1,7 @@
 (ns ^:figwheel-always bundes.views
   (:require [sablono.core :as html :refer-macros [html]]
             [om.core      :as om]
+            [om-bootstrap.panel :as p]
             [om-bootstrap.button :as b]
             [om-bootstrap.nav :as n]
             [om-bootstrap.table :refer [table]]
@@ -55,5 +56,9 @@
   [app owner]
   (reify om/IRender
     (render [this]
-      (html [:h1 (str "I'm the unit details for unit:"
-                      (get-in app [:router :params :id]))]))))
+      (let [id   (some-> app :router :params :id keyword)
+            unit (some-> app :units id)]
+        (d/div
+         (p/panel
+          {:header (d/h3 (str "unit: " (name id)))}
+          "Some content about this unit"))))))
