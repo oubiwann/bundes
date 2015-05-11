@@ -43,7 +43,7 @@
                         :source-paths ["src/cljs"]
                         :figwheel true
                         :compiler {:main       bundes.client
-                                   :asset-path "js/compiled/out"
+                                   :asset-path "js/compiled/app"
                                    :output-to  "resources/public/js/compiled/app.js"
                                    :output-dir "resources/public/js/compiled/app"
                                    :source-map-timestamp true}}
