@@ -3,6 +3,7 @@
             [om.core      :as om]
             [om-bootstrap.button :as b]
             [om-bootstrap.nav :as n]
+            [om-bootstrap.table :refer [table]]
             [om-tools.dom :as d :include-macros true]))
 
 (defn with-layout
@@ -25,11 +26,23 @@
          ;; now hand over to our main component
          (d/div {:class "container"} (om/build component app)))))))
 
+(defn unit-row
+  [[id unit] owner]
+  (reify om/IRender
+    (render [this]
+      (println (pr-str unit))
+      (d/tr
+       (d/td (name id))
+       (d/td (some-> unit :type name))
+       (d/td (some-> unit :runtime :type name))))))
+
 (defn unit-list
   [app owner]
   (reify om/IRender
     (render [this]
-      (html [:h1 "I'm the unit list"]))))
+      (table {:striped? true :bordered? true :hover? true}
+             (d/thead (d/tr (d/th "Unit") (d/th "Type") (d/th "Runtime")))
+             (apply d/tbody (om/build-all unit-row (:units app)))))))
 
 (defn unit-details
   [app owner]
