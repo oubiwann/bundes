@@ -30,9 +30,8 @@
   [[id unit] owner]
   (reify om/IRender
     (render [this]
-      (println (pr-str unit))
       (d/tr
-       (d/td (name id))
+       (d/td (d/a {:href (str "#/unit/" (name id))} (name id)))
        (d/td (some-> unit :type name))
        (d/td (some-> unit :runtime :type name))))))
 
