@@ -1,11 +1,14 @@
 (ns ^:figwheel-always bundes.views
-  (:require [sablono.core        :as html :refer-macros [html]]
-            [om.core             :as om]
-            [om-bootstrap.panel  :as p]
-            [om-bootstrap.button :as b]
-            [om-bootstrap.nav    :as n]
-            [om-tools.dom        :as d :include-macros true]
-            [om-bootstrap.table  :refer [table]]))
+    (:require [sablono.core        :as html :refer-macros [html]]
+              [cljs.core.async     :as a]
+              [om.core             :as om]
+              [om-bootstrap.panel  :as p]
+              [om-bootstrap.button :as b]
+              [om-bootstrap.nav    :as n]
+              [om-bootstrap.modal  :as md]
+              [om-tools.dom        :as d :include-macros true]
+              [om-bootstrap.table  :refer [table]])
+    (:require-macros [cljs.core.async.macros :refer [go]]))
 
 (defn with-layout
   "This is a closure over a component which yields a new component.
