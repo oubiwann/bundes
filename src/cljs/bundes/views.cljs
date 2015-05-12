@@ -50,7 +50,7 @@
                        (d/th "Type")
                        (d/th "Runtime")
                        (d/th "Actions")))
-             (apply d/tbody (om/build-all unit-row (:units app)))))))
+             (d/tbody (om/build-all unit-row (:units app)))))))
 
 (defn unit-details
   [app owner]
