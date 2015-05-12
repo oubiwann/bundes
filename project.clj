@@ -35,6 +35,8 @@
                  [sablono                      "0.3.4"]
                  [secretary                    "1.2.3"]
                  [bidi                         "1.18.11"]
+                 [prismatic/schema             "0.4.2"]
+                 [prismatic/plumbing           "0.4.3"]
                  [racehub/om-bootstrap         "0.5.0"]]
   :clean-targets ^{:protect false} ["resources/public/js/compiled"
                                     "target"
