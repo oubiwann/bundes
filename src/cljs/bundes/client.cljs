@@ -12,23 +12,25 @@
    "/unit/:id" views/unit-details])
 
 (defonce app-state
-  (atom {:units {:console
-                 {:type :daemon,
-                  :profile {:mem 512.0, :cpus 0.5, :count 2, :maxcol 2},
-                  :runtime
-                  {:type :docker,
-                   :docker
-                   {:image "dockerfile/nginx", :port-mappings [{:container-port 80}]}},
-                  :id :console,
-                  :status :start},
-                 :open-metering
-                 {:type :batch,
-                  :schedule "/20 * * * * * *",
-                  :profile {:mem 256, :cpus 1.0},
-                  :runtime {:type :command, :command "/srv/cluster/foobar"},
-                  :id :open-metering,
-
-                  :status :start}}}))
+  (atom {:units {:console {:type :daemon,
+                           :profile {:mem 512.0,
+                                     :cpus 0.5,
+                                     :count 2,
+                                     :maxcol 2},
+                           :runtime
+                           {:type :docker,
+                            :docker
+                            {:image "dockerfile/nginx",
+                             :port-mappings [{:container-port 80}]}},
+                           :id :console,
+                           :status :start},
+                 :open-metering {:type :batch,
+                                 :schedule "/20 * * * * * *",
+                                 :profile {:mem 256, :cpus 1.0},
+                                 :runtime {:type :command,
+                                           :command "/srv/cluster/foobar"},
+                                 :id :open-metering,
+                                 :status :start}}}))
 
 (let [router (router/init routes app-state)
       target {:target (. js/document (getElementById "app"))}]
