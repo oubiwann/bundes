@@ -5,7 +5,6 @@
             [secretary.core         :refer [add-route! dispatch!]])
   (:import goog.History))
 
-
 (defonce history (History.))
 
 (defn init
