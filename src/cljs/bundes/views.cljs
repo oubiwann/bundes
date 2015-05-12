@@ -32,28 +32,65 @@
 
 (defn unit-row
   [[id unit] owner]
-  (reify om/IRender
-    (render [this]
-      (d/tr
-       (d/td (d/a {:href (str "#/unit/" (name id))} (name id)))
-       (d/td (some-> unit :type name))
-       (d/td (some-> unit :runtime :type name))
-       (d/td (b/button-group
-              {}
-              (b/button {} "Suspend")
-              (b/button {} "Trigger")))))))
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:visible? false
+       :triggering? false})
+    om/IRenderState
+    (render-state [this {:keys [visible? triggering?]}]
+      (let [show-modal (fn [_] (om/set-state! owner :visible? true))
+            hide-modal (fn [_] (om/set-state! owner :visible? false))
+            trigger-action (fn [_]
+                             (try
+                               (println "triggering!")
+                               (go
+                                 (let [ch (a/timeout 5000)]
+                                   (a/<! ch)
+                                   (println "timeout expired!")
+                                   (om/set-state! owner :triggering? false)))
+                               (om/set-state! owner :visible? false)
+                               (om/set-state! owner :triggering? true)
+                               (catch :default e
+                                 (println "some error occurred:" (pr-str e)))))]
+        (d/tr
+         (d/td (d/a {:href (str "#/unit/" (name id))} (name id)))
+         (d/td (some-> unit :type name))
+         (d/td (some-> unit :runtime :type name))
+         (d/td
+          (when visible?
+            (md/modal {:header (d/h4 (str "Trigger one-time run for: " (name id)))
+                       :footer (d/div (b/button {:on-click hide-modal} "Cancel")
+                                      (b/button {:on-click trigger-action} "Trigger"))
+                       :close-button? true
+                       :animate? true
+                       :visible? visible?}
+                      (str "Run a one-off batch for id: " (name id))))
+          (b/button-group
+           {}
+           (b/button {} "Suspend")
+           (b/button {:disable? triggering?
+                      :bs-style (if triggering? "danger" "info")
+                      :on-click show-modal}
+                     "Trigger"))))))))
 
 (defn unit-list
   [app owner]
-  (reify om/IRender
-    (render [this]
-      (table {:striped? true :bordered? true :hover? true}
-             (d/thead (d/tr
-                       (d/th "Unit")
-                       (d/th "Type")
-                       (d/th "Runtime")
-                       (d/th "Actions")))
-             (d/tbody (om/build-all unit-row (:units app)))))))
+  (reify
+    om/IInitState
+    (init-state [this]
+      {:visible? false})
+    om/IRenderState
+    (render-state [this {:keys [visible?]}]
+      (println "visible: " (pr-str visible?))
+      (d/div
+       (table {:striped? true :bordered? true :hover? true}
+              (d/thead (d/tr
+                        (d/th "Unit")
+                        (d/th "Type")
+                        (d/th "Runtime")
+                        (d/th "Actions")))
+              (d/tbody (om/build-all unit-row (:units app))))))))
 
 (defn unit-details
   [app owner]
