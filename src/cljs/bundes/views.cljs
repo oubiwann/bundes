@@ -77,12 +77,8 @@
 (defn unit-list
   [app owner]
   (reify
-    om/IInitState
-    (init-state [this]
-      {:visible? false})
-    om/IRenderState
-    (render-state [this {:keys [visible?]}]
-      (println "visible: " (pr-str visible?))
+    om/IRender
+    (render-state [this]
       (d/div
        (table {:striped? true :bordered? true :hover? true}
               (d/thead (d/tr
