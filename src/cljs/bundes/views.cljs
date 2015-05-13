@@ -78,7 +78,7 @@
   [app owner]
   (reify
     om/IRender
-    (render-state [this]
+    (render [this]
       (d/div
        (table {:striped? true :bordered? true :hover? true}
               (d/thead (d/tr
