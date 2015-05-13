@@ -97,4 +97,6 @@
         (d/div
          (p/panel
           {:header (d/h3 (str "unit: " (name id)))}
-          "Some content about this unit"))))))
+            (d/ul
+              (for [[k v] unit]
+                (d/li (str (name k) ":" (pr-str v)))))))))))
