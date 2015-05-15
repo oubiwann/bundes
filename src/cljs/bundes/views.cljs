@@ -1,11 +1,13 @@
 (ns ^:figwheel-always bundes.views
     (:require [sablono.core        :as html :refer-macros [html]]
               [cljs.core.async     :as a]
+              [clojure.string      :as s]
               [om.core             :as om]
               [om-bootstrap.panel  :as p]
               [om-bootstrap.button :as b]
               [om-bootstrap.nav    :as n]
               [om-bootstrap.modal  :as md]
+              [om-bootstrap.random :as r]
               [om-tools.dom        :as d :include-macros true]
               [om-bootstrap.table  :refer [table]])
     (:require-macros [cljs.core.async.macros :refer [go]]))
@@ -88,15 +90,71 @@
                         (d/th "Actions")))
               (d/tbody (om/build-all unit-row (:units app))))))))
 
+(defn daemon-detail
+  [data owner]
+  (reify om/IRender
+    (render [this]
+      (d/div
+        (p/panel
+          {:header (d/h3
+                   (str (name (:id data)) "  -  ")
+                   (r/label {:bs-style "default"} "Daemon"))}
+          (d/p (some-> (:unit data) :description))
+          (table {}
+            (d/tbody
+              (d/tr (d/td "Status")
+                    (d/td (some-> (:unit data)
+                                   :status
+                                   name s/capitalize)))
+              (d/tr (d/td "Type")
+                    (d/td (some-> (:unit data)
+                                   :runtime
+                                   :type name s/capitalize)))
+              (d/tr (d/td "Resources")
+                    (d/td (pr-str (some-> (:unit data) :profile))))
+              (d/tr (d/td "Runtime Details")
+                    (d/td (let [k (some-> (:unit data)
+                                   :runtime
+                                   :type
+                                   name
+                                   keyword)]
+                              (pr-str (some-> (:unit data)
+                                               :runtime
+                                               k)))))))
+          (b/button-group {}
+            (if (= :start (some-> (:unit data)
+                                   :status))
+                  (b/button {:bs-style "danger"} "Suspend")
+                  (b/button {:bs-style "info"} "Trigger"))))))))
+
+(defn batch-detail
+  [data owner]
+  (reify om/IRender
+    (render [this]
+      (d/div
+        (p/panel
+          {:header (d/h3
+                   (str (name (:id data)) "  -  ")
+                   (r/label {:bs-style "primary"} "Batch"))}
+          (d/p (some-> (:unit data) :description))
+          (table {}
+            (d/tbody
+              (d/tr (d/td "Schedule")
+                    (d/td (some-> (:unit data)
+                                   :schedule)))
+              (d/tr (d/td "Resources")
+                    (d/td (pr-str (some-> (:unit data)
+                                           :profile))))))
+          (b/button-group {}
+            (b/button {} "Suspend")
+            (b/button {:bs-style "info"} "Trigger")))))))
+
 (defn unit-details
   [app owner]
   (reify om/IRender
     (render [this]
       (let [id   (some-> app :router :params :id keyword)
             unit (some-> app :units id)]
-        (d/div
-         (p/panel
-          {:header (d/h3 (str "unit: " (name id)))}
-            (d/ul
-              (for [[k v] unit]
-                (d/li (str (name k) ":" (pr-str v)))))))))))
+              (if (= :daemon (:type unit))
+                    (om/build daemon-detail {:unit unit :id id})
+                    (om/build batch-detail {:unit unit :id id}))))))
