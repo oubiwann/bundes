@@ -22,6 +22,8 @@
             [bundes.api             :as api]
             [bundes.watch           :as watch]
             [bundes.tick            :as tick]
+            [bundes.cluster         :as cluster]
+            [bundes.service         :as service]
             [bundes.decisions       :refer [decisions]]
             [bundes.effect          :refer [perform-effect]]
             [org.spootnik.logconfig :refer [start-logging!]]
@@ -66,21 +68,27 @@
     (doseq [effect side-effects]
       (perform-effect (merge system effect)))))
 
-(defn start!
+(defn make-service
   "This is the crux of the namespace, where everything gets started
    and glued together."
   [config]
-  (info "bundesrat: starting up.")
-  (let [db     (atom {})                            ;; 1. Hold config in atom
-        reg    (unit/atom-registry db)              ;; 2. Mimick a transient
-        mesos  (mesos/framework! config)            ;; 3. Register with mesos
-        ticker (tick/create!)                       ;; 4. Start scheduler
-        system {:ticker ticker :mesos mesos}]       ;; 5. Prepare system
-    (watch/watch-units reg (:unit-dir config))      ;; 6. Watch unit dir
-    (converge-topology system nil nil {} @db)       ;; 7. First converge
-    (add-watch db :synchronizer                     ;; 8. Watch for changes
-               (partial converge-topology system))  ;;
-    (api/start! (:service config) reg)))            ;; 9. Start HTTP API
+  (let [uuid (str (java.util.UUID/randomUUID))]
+    (reify
+      service/Service
+      (get-id [this]
+        uuid)
+      (start! [this]
+        (let [db     (atom {})                       ;; 1. Hold config in atom
+              reg    (unit/atom-registry db)         ;; 2. Mimick a transient
+              mesos  (mesos/framework! config)       ;; 3. Register w/ mesos
+              ticker (tick/create!)                  ;; 4. Start scheduler
+              system {:ticker ticker :mesos mesos}]  ;; 5. Prepare system
+          (watch/watch-units reg (:unit-dir config)) ;; 6. Watch unit dir
+          (converge-topology system nil nil {} @db)  ;; 7. First converge
+          (add-watch db :synchronizer                ;; 8. Watch for changes
+                     (partial converge-topology system))
+          (api/start! (:service config) reg)))
+      (stop! [this]))))                              ;; 9. Start HTTP API
 
 (defn -main
   "Executable entry point, parse options, reads config and
@@ -96,4 +104,8 @@
       (println banner)
       (System/exit 0))
 
-    (start! config)))
+    (cluster/run-election (:cluster config) (make-service config))
+    (info "back from election")
+
+;;    (Thread/sleep 5000)
+    ))
