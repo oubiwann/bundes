@@ -11,7 +11,7 @@
              :exclusions [org.clojure/clojure
                           org.codehaus.plexus/plexus-utils]]]
   :source-paths ["src/clj"]
-  :dependencies [[org.clojure/clojure          "1.7.0-beta2"]
+  :dependencies [[org.clojure/clojure          "1.7.0-RC1"]
                  [org.clojure/tools.logging    "0.3.1"]
                  [org.clojure/tools.cli        "0.3.1"]
                  [org.clojure/core.match       "0.3.0-alpha4"]
@@ -29,7 +29,7 @@
                  [clj-yaml                     "0.4.0"]
 
                  ;; clojurescript deps
-                 [org.clojure/clojurescript    "0.0-3211"]
+                 [org.clojure/clojurescript    "0.0-3269"]
                  [org.clojure/core.async       "0.1.346.0-17112a-alpha"]
                  [org.omcljs/om                "0.8.8"]
                  [figwheel                     "0.3.1"]
