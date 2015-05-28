@@ -1,5 +1,5 @@
-mesos: zk://control01:2181,control02:2181,control03:2181/mesos
-registry: zk://control01:2181,control02:2181,control03:2181/bundes
+mesos: zk://localhost:2181/mesos
+registry: zk://localhost:2181/bundes
 unit-dir: units/
 logging:
   level: info
