@@ -5,25 +5,27 @@ Bundes: warrants order in the confederatio
    :alt: bundesrat logo
    :align: center
 
-**Bundes** schedules and orchestrates **long running daemons** or **batch jobs**
-throughout your infrastructure. To do this, it relies on `Apache Mesos`_ and
-acts as a mesos **framework**.
+
+**Bundes** is a distributed scheduler. Think of it as a cluster-wide
+init system & cron. Bundes schedules and orchestrates **long running
+daemons** or **batch jobs** throughout your infrastructure. To do
+this, it relies on `Apache Mesos`_ and acts as a mesos **framework**.
 
 Scalability
-  **Bundes** treats your infrastructure as a uniform pool of computing resources
+  Bundes treats your infrastructure as a uniform pool of computing resources
   and schedules **daemons** and **batches** according to your resource constraints.
 
 Compatibility  
-  To **Bundes**, workloads may either be plain commands to start or
+  To bundes, workloads may either be plain commands to start or
   docker images.
 
 Simplicity
-  **Bundes** provides insights into its current state through its REST API
+  Bundes provides insights into its current state through its REST API
   or web interface, allowing you to quickly adjust resources or trigger
   job execution.
 
 Coherency
-  By relying on plain YAML_ file to describe units of work, **bundes**
+  By relying on plain YAML_ file to describe units of work, bundes
   allows you to stick to your standard way of supplying configuration,
   using your configuration management framework of choice (Puppet_, Chef_
   and Ansible_ are popular options.) Logging also leverages your standard
@@ -31,17 +33,17 @@ Coherency
   like Logstash_.
 
 Resilient
-  Any number of **bundes** processes may run concurrently. A leader process
+  Any number of bundes processes may run concurrently. A leader process
   will be elected to handle orchestration duties.
 
 Lightweight
-  The **bundes** process is a small and self-contained **JAR** with low
+  The bundes process is a small and self-contained **JAR** with low
   memory requirements. Its only requirement are `Apache Mesos`_ and
   `Apache Zookeeper`_.
 
-**Bundes** is sponsored by Exoscale_.
+Bundes is sponsored by Exoscale_.
 
-    **Bundes** is short for Bundesrat, the Swiss German name for the
+    Bundes is short for Bundesrat, the Swiss German name for the
     7-member Swiss federal council which acts as head of state.
 
 .. _Apache Mesos: http://mesos.apache.org
