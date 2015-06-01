@@ -12,7 +12,7 @@
    "/unit/:id" views/unit-details])
 
 (defonce app-state
-  (atom {:units {:console {:type :daemon,
+  (atom {:units {:web-frontend {:type :daemon,
                            :profile {:mem 512.0,
                                      :cpus 0.5,
                                      :count 2,
@@ -24,7 +24,7 @@
                              :port-mappings [{:container-port 80}]}},
                            :id :console,
                            :status :start},
-                 :open-metering {:type :batch,
+                 :sanity-check {:type :batch,
                                  :schedule "/20 * * * * * *",
                                  :profile {:mem 256, :cpus 1.0},
                                  :runtime {:type :command,
