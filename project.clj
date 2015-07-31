@@ -1,8 +1,7 @@
 (defproject bundes "0.3.0"
   :description "a simple init system for mesos"
   :url "https://github.com/pyr/bundes"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :license {:name "MIT License"}
   :aot :all
   :main bundes.main
   :plugins [[lein-cljsbuild "1.0.5"
@@ -17,7 +16,7 @@
                  [org.clojure/core.match               "0.3.0-alpha4"]
                  [org.spootnik/mesomatic               "0.22.1-r0"]
                  [org.spootnik/mesomatic-async         "0.22.1-r0"]
-                 [org.spootnik/logconfig               "0.7.3"]
+                 [spootnik/unilog                      "0.7.4"]
                  [org.spootnik/watchman                "0.3.3"]
                  [cc.qbits/jet                         "0.5.7"]
                  [im.chit/cronj                        "1.4.3"]
@@ -29,6 +28,7 @@
                  [clj-yaml                             "0.4.0"]
                  [org.apache.curator/curator-recipes   "2.8.0"]
                  [org.apache.curator/curator-framework "2.8.0"]
+                 [riemann-clojure-client               "0.3.2"]
 
                  ;; clojurescript deps
                  [org.clojure/clojurescript            "0.0-3269"]
