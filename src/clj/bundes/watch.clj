@@ -4,7 +4,7 @@
    the interaction with the registry goes through
    assoc! and dissoc!"
   (:require [clj-yaml.core         :refer [parse-string]]
-            [org.spootnik.watchman :refer [watch! ->path]]
+            [watch.man             :refer [watch! ->path]]
             [clojure.tools.logging :refer [info]]))
 
 (defn extract-id

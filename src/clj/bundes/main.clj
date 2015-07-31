@@ -26,7 +26,7 @@
             [bundes.service         :as service]
             [bundes.decisions       :refer [decisions]]
             [bundes.effect          :refer [perform-effect]]
-            [org.spootnik.logconfig :refer [start-logging!]]
+            [unilog.config          :refer [start-logging!]]
             [clj-yaml.core          :refer [parse-string]]
             [clojure.tools.logging  :refer [info debug]]
             [clojure.tools.cli      :refer [cli]]))
