@@ -4,7 +4,7 @@
             [compojure.route      :as route]
             [ring.middleware.json :as json]
             [ring.util.response   :refer [response status redirect]]
-            [qbits.jet.server     :refer [run-jetty]]
+            [net.http.server      :refer [run-server]]
             [compojure.core       :refer [GET PUT routes]]))
 
 (defn api-routes
@@ -24,4 +24,4 @@
 (defn start!
   "Run the ring-handler with jetty"
   [config reg]
-  (run-jetty (assoc config :ring-handler (api-routes reg))))
+  (run-server config (api-routes reg)))
