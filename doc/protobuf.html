@@ -1,0 +1,4254 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <title>Protocol Documentation</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic"/>
+    <style>
+      body {
+        width: 60em;
+        margin: 1em auto;
+        color: #222;
+        font-family: "Ubuntu", sans-serif;
+        padding-bottom: 4em;
+      }
+
+      h1 {
+        font-weight: normal;
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+      }
+
+      h2 {
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+        margin: 1.5em 0;
+      }
+
+      h3 {
+        font-weight: normal;
+        border-bottom: 1px solid #aaa;
+        padding-bottom: 0.5ex;
+      }
+
+      a {
+        text-decoration: none;
+        color: #567e25;
+      }
+
+      table {
+        width: 100%;
+        font-size: 80%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        font-weight: 700;
+        background-color: #dcdcdc;
+      }
+
+      tbody tr:nth-child(even) {
+        background-color: #fbfbfb;
+      }
+
+      td {
+        border: 1px solid #ccc;
+        padding: 0.5ex 2ex;
+      }
+
+      td p {
+        text-indent: 1em;
+        margin: 0;
+      }
+
+      td p:nth-child(1) {
+        text-indent: 0; /* No indent on first p in td */
+      }
+
+      /* Table of fields */
+      .field-table td:nth-child(1) { /* Field */
+        width: 10em;
+      }
+      .field-table td:nth-child(2) { /* Type */
+        width: 10em;
+      }
+      .field-table td:nth-child(3) { /* Label */
+        width: 6em;
+      }
+      .field-table td:nth-child(4) { /* Description */
+        width: auto;
+      }
+
+      /* Table of extensions */
+      .extension-table td:nth-child(1) { /* Extension */
+        width: 10em;
+      }
+      .extension-table td:nth-child(2) { /* Type */
+        width: 10em;
+      }
+      .extension-table td:nth-child(3) { /* Base */
+        width: 10em;
+      }
+      .extension-table td:nth-child(4) { /* Number */
+        width: 5em;
+      }
+      .extension-table td:nth-child(5) { /* Description */
+        width: auto;
+      }
+
+      /* Table of enum values. */
+      .enum-table td:nth-child(1) { /* Name */
+        width: 10em;
+      }
+      .enum-table td:nth-child(2) { /* Number */
+        width: 10em;
+      }
+      .enum-table td:nth-child(3) { /* Description */
+        width: auto;
+      }
+
+      /* Table of scalar value types. */
+      .scalar-value-types-table tr {
+        height: 3em;
+      }
+
+      /* Table of contents. */
+      #toc-container ul {
+        list-style-type: none;
+        padding-left: 1em;
+        line-height: 180%;
+        margin: 0;
+      }
+      #toc > li > a {
+        font-weight: bold;
+      }
+
+      /* File heading div */
+      .file-heading {
+        width: 100%;
+        display: table;
+        border-bottom: 1px solid #aaa;
+        margin: 4em 0 1.5em 0;
+      }
+      .file-heading h2 {
+        border: none;
+        display: table-cell;
+      }
+      .file-heading a {
+        text-align: right;
+        display: table-cell;
+      }
+
+      /* The 'M', 'E' and 'X' badges in the ToC */
+      .badge {
+        width: 1.6em;
+        height: 1.6em;
+        display: inline-block;
+
+        line-height: 1.6em;
+        text-align: center;
+        font-weight: bold;
+        font-size: 60%;
+
+        color: #89ba48;
+        background-color: #dff0c8;
+
+        margin: 0.5ex 1em 0.5ex -1em;
+        border: 1px solid #fbfbfb;
+        border-radius: 1ex;
+      }
+    </style>
+
+    <!-- User custom CSS -->
+    <link rel="stylesheet" type="text/css" href="stylesheet.css"/>
+  </head>
+
+  <body>
+
+    <h1 id="title">Protocol Documentation</h1>
+
+    <h2>Table of Contents</h2>
+
+    <div id="toc-container">
+      <ul id="toc">
+        <li>
+          <a href="#mesos.proto">mesos.proto</a>
+          <ul>
+            <li>
+              <a href="#mesos.Address">
+                <span class="badge">M</span>
+                Address
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.AppcImageManifest">
+                <span class="badge">M</span>
+                AppcImageManifest
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.AppcImageManifest.Annotation">
+                <span class="badge">M</span>
+                AppcImageManifest.Annotation
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.AppcImageManifest.Label">
+                <span class="badge">M</span>
+                AppcImageManifest.Label
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Attribute">
+                <span class="badge">M</span>
+                Attribute
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.CommandInfo">
+                <span class="badge">M</span>
+                CommandInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.CommandInfo.ContainerInfo">
+                <span class="badge">M</span>
+                CommandInfo.ContainerInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.CommandInfo.URI">
+                <span class="badge">M</span>
+                CommandInfo.URI
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerID">
+                <span class="badge">M</span>
+                ContainerID
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerInfo">
+                <span class="badge">M</span>
+                ContainerInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerInfo.DockerInfo">
+                <span class="badge">M</span>
+                ContainerInfo.DockerInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerInfo.DockerInfo.PortMapping">
+                <span class="badge">M</span>
+                ContainerInfo.DockerInfo.PortMapping
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerInfo.MesosInfo">
+                <span class="badge">M</span>
+                ContainerInfo.MesosInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerStatus">
+                <span class="badge">M</span>
+                ContainerStatus
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Credential">
+                <span class="badge">M</span>
+                Credential
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Credentials">
+                <span class="badge">M</span>
+                Credentials
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.DiscoveryInfo">
+                <span class="badge">M</span>
+                DiscoveryInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.DurationInfo">
+                <span class="badge">M</span>
+                DurationInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Environment">
+                <span class="badge">M</span>
+                Environment
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Environment.Variable">
+                <span class="badge">M</span>
+                Environment.Variable
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ExecutorID">
+                <span class="badge">M</span>
+                ExecutorID
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ExecutorInfo">
+                <span class="badge">M</span>
+                ExecutorInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Filters">
+                <span class="badge">M</span>
+                Filters
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.FrameworkID">
+                <span class="badge">M</span>
+                FrameworkID
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.FrameworkInfo">
+                <span class="badge">M</span>
+                FrameworkInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.FrameworkInfo.Capability">
+                <span class="badge">M</span>
+                FrameworkInfo.Capability
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.HealthCheck">
+                <span class="badge">M</span>
+                HealthCheck
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.HealthCheck.HTTP">
+                <span class="badge">M</span>
+                HealthCheck.HTTP
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Image">
+                <span class="badge">M</span>
+                Image
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Image.Appc">
+                <span class="badge">M</span>
+                Image.Appc
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Image.Docker">
+                <span class="badge">M</span>
+                Image.Docker
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.InverseOffer">
+                <span class="badge">M</span>
+                InverseOffer
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Label">
+                <span class="badge">M</span>
+                Label
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Labels">
+                <span class="badge">M</span>
+                Labels
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.MachineID">
+                <span class="badge">M</span>
+                MachineID
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.MachineInfo">
+                <span class="badge">M</span>
+                MachineInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.MasterInfo">
+                <span class="badge">M</span>
+                MasterInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.NetworkInfo">
+                <span class="badge">M</span>
+                NetworkInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.NetworkInfo.IPAddress">
+                <span class="badge">M</span>
+                NetworkInfo.IPAddress
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer">
+                <span class="badge">M</span>
+                Offer
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer.Operation">
+                <span class="badge">M</span>
+                Offer.Operation
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer.Operation.Create">
+                <span class="badge">M</span>
+                Offer.Operation.Create
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer.Operation.Destroy">
+                <span class="badge">M</span>
+                Offer.Operation.Destroy
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer.Operation.Launch">
+                <span class="badge">M</span>
+                Offer.Operation.Launch
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer.Operation.Reserve">
+                <span class="badge">M</span>
+                Offer.Operation.Reserve
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer.Operation.Unreserve">
+                <span class="badge">M</span>
+                Offer.Operation.Unreserve
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.OfferID">
+                <span class="badge">M</span>
+                OfferID
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Parameter">
+                <span class="badge">M</span>
+                Parameter
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Parameters">
+                <span class="badge">M</span>
+                Parameters
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.PerfStatistics">
+                <span class="badge">M</span>
+                PerfStatistics
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Port">
+                <span class="badge">M</span>
+                Port
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Ports">
+                <span class="badge">M</span>
+                Ports
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.RateLimit">
+                <span class="badge">M</span>
+                RateLimit
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.RateLimits">
+                <span class="badge">M</span>
+                RateLimits
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Request">
+                <span class="badge">M</span>
+                Request
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Resource">
+                <span class="badge">M</span>
+                Resource
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Resource.DiskInfo">
+                <span class="badge">M</span>
+                Resource.DiskInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Resource.DiskInfo.Persistence">
+                <span class="badge">M</span>
+                Resource.DiskInfo.Persistence
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Resource.ReservationInfo">
+                <span class="badge">M</span>
+                Resource.ReservationInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Resource.RevocableInfo">
+                <span class="badge">M</span>
+                Resource.RevocableInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ResourceStatistics">
+                <span class="badge">M</span>
+                ResourceStatistics
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ResourceUsage">
+                <span class="badge">M</span>
+                ResourceUsage
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ResourceUsage.Executor">
+                <span class="badge">M</span>
+                ResourceUsage.Executor
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.SlaveID">
+                <span class="badge">M</span>
+                SlaveID
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.SlaveInfo">
+                <span class="badge">M</span>
+                SlaveInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TaskID">
+                <span class="badge">M</span>
+                TaskID
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TaskInfo">
+                <span class="badge">M</span>
+                TaskInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TaskStatus">
+                <span class="badge">M</span>
+                TaskStatus
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TimeInfo">
+                <span class="badge">M</span>
+                TimeInfo
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TrafficControlStatistics">
+                <span class="badge">M</span>
+                TrafficControlStatistics
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.URL">
+                <span class="badge">M</span>
+                URL
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Unavailability">
+                <span class="badge">M</span>
+                Unavailability
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Value">
+                <span class="badge">M</span>
+                Value
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Value.Range">
+                <span class="badge">M</span>
+                Value.Range
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Value.Ranges">
+                <span class="badge">M</span>
+                Value.Ranges
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Value.Scalar">
+                <span class="badge">M</span>
+                Value.Scalar
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Value.Set">
+                <span class="badge">M</span>
+                Value.Set
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Value.Text">
+                <span class="badge">M</span>
+                Value.Text
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Volume">
+                <span class="badge">M</span>
+                Volume
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerInfo.DockerInfo.Network">
+                <span class="badge">E</span>
+                ContainerInfo.DockerInfo.Network
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.ContainerInfo.Type">
+                <span class="badge">E</span>
+                ContainerInfo.Type
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.DiscoveryInfo.Visibility">
+                <span class="badge">E</span>
+                DiscoveryInfo.Visibility
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.FrameworkInfo.Capability.Type">
+                <span class="badge">E</span>
+                FrameworkInfo.Capability.Type
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Image.Type">
+                <span class="badge">E</span>
+                Image.Type
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.MachineInfo.Mode">
+                <span class="badge">E</span>
+                MachineInfo.Mode
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.NetworkInfo.Protocol">
+                <span class="badge">E</span>
+                NetworkInfo.Protocol
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Offer.Operation.Type">
+                <span class="badge">E</span>
+                Offer.Operation.Type
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Status">
+                <span class="badge">E</span>
+                Status
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TaskState">
+                <span class="badge">E</span>
+                TaskState
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TaskStatus.Reason">
+                <span class="badge">E</span>
+                TaskStatus.Reason
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.TaskStatus.Source">
+                <span class="badge">E</span>
+                TaskStatus.Source
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Value.Type">
+                <span class="badge">E</span>
+                Value.Type
+              </a>
+            </li>
+            <li>
+              <a href="#mesos.Volume.Mode">
+                <span class="badge">E</span>
+                Volume.Mode
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li><a href="#scalar-value-types">Scalar Value Types</a></li>
+      </ul>
+    </div>
+
+    <div class="file-heading">
+      <h2 id="mesos.proto">mesos.proto</h2><a href="#title">Top</a>
+    </div>
+    <p>Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+&quot;License&quot;); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at</p><p>    http://www.apache.org/licenses/LICENSE-2.0</p><p>Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.</p>
+    <h3 id="mesos.Address">Address</h3>
+    <p>A network address.</p><p>TODO(bmahler): Use this more widely.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>hostname</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ip</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>port</td>
+          <td><a href="#int32">int32</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.AppcImageManifest">AppcImageManifest</h3>
+    <p>Protobuf for the Appc image manifest JSON schema:
+https://github.com/appc/spec/blob/master/spec/aci.md#image-manifest-schema
+Where possible, any field required in the schema is required in the protobuf
+but some cannot be expressed, e.g., a repeated string that has at least one
+element. Further validation should be performed after parsing the JSON into
+the protobuf.
+This version of Appc protobuf is based on Appc spec version 0.6.1.
+TODO(xujyan): This protobuf currently defines a subset of fields in the spec
+that Mesos makes use of to avoid confusion. New fields are going to be added
+when Mesos starts to support them.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>acKind</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>acVersion</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.AppcImageManifest.Label">AppcImageManifest.Label</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>annotations</td>
+          <td><a href="#mesos.AppcImageManifest.Annotation">AppcImageManifest.Annotation</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.AppcImageManifest.Annotation">AppcImageManifest.Annotation</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.AppcImageManifest.Label">AppcImageManifest.Label</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Attribute">Attribute</h3>
+    <p>Describes an attribute that can be set on a machine. For now,
+attributes and resources share the same &quot;value&quot; type, but this may
+change in the future and attributes may only be string based.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>type</td>
+          <td><a href="#mesos.Value.Type">Value.Type</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>scalar</td>
+          <td><a href="#mesos.Value.Scalar">Value.Scalar</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ranges</td>
+          <td><a href="#mesos.Value.Ranges">Value.Ranges</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>set</td>
+          <td><a href="#mesos.Value.Set">Value.Set</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>text</td>
+          <td><a href="#mesos.Value.Text">Value.Text</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.CommandInfo">CommandInfo</h3>
+    <p>Describes a command, executed via: '/bin/sh -c value'. Any URIs specified
+are fetched before executing the command.  If the executable field for an
+uri is set, executable file permission is set on the downloaded file.
+Otherwise, if the downloaded file has a recognized archive extension
+(currently [compressed] tar and zip) it is extracted into the executor's
+working directory. This extraction can be disabled by setting `extract` to
+false. In addition, any environment variables are set before executing
+the command (so they can be used to &quot;parameterize&quot; your command).</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>container</td>
+          <td><a href="#mesos.CommandInfo.ContainerInfo">CommandInfo.ContainerInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>uris</td>
+          <td><a href="#mesos.CommandInfo.URI">CommandInfo.URI</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>environment</td>
+          <td><a href="#mesos.Environment">Environment</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>shell</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p> Default: true</p></td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>arguments</td>
+          <td><a href="#string">string</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>user</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.CommandInfo.ContainerInfo">CommandInfo.ContainerInfo</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>image</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>options</td>
+          <td><a href="#string">string</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.CommandInfo.URI">CommandInfo.URI</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>executable</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>extract</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p> Default: true</p></td>
+        </tr>
+        <tr>
+          <td>cache</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerID">ContainerID</h3>
+    <p>A slave generated ID to distinguish a container. The ID must be unique
+between any active or completed containers on the slave. In particular,
+containers for different runs of the same (framework, executor) pair must be
+unique.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerInfo">ContainerInfo</h3>
+    <p>Describes a container configuration and allows extensible
+configurations for different container implementations.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>type</td>
+          <td><a href="#mesos.ContainerInfo.Type">ContainerInfo.Type</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>volumes</td>
+          <td><a href="#mesos.Volume">Volume</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>hostname</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>docker</td>
+          <td><a href="#mesos.ContainerInfo.DockerInfo">ContainerInfo.DockerInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mesos</td>
+          <td><a href="#mesos.ContainerInfo.MesosInfo">ContainerInfo.MesosInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>network_infos</td>
+          <td><a href="#mesos.NetworkInfo">NetworkInfo</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerInfo.DockerInfo">ContainerInfo.DockerInfo</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>image</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>network</td>
+          <td><a href="#mesos.ContainerInfo.DockerInfo.Network">ContainerInfo.DockerInfo.Network</a></td>
+          <td>optional</td>
+          <td><p> Default: HOST</p></td>
+        </tr>
+        <tr>
+          <td>port_mappings</td>
+          <td><a href="#mesos.ContainerInfo.DockerInfo.PortMapping">ContainerInfo.DockerInfo.PortMapping</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>privileged</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p> Default: false</p></td>
+        </tr>
+        <tr>
+          <td>parameters</td>
+          <td><a href="#mesos.Parameter">Parameter</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>force_pull_image</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerInfo.DockerInfo.PortMapping">ContainerInfo.DockerInfo.PortMapping</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>host_port</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>container_port</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>protocol</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerInfo.MesosInfo">ContainerInfo.MesosInfo</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>image</td>
+          <td><a href="#mesos.Image">Image</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerStatus">ContainerStatus</h3>
+    <p>Container related information that is resolved during container setup. The
+information is sent back to the framework as part of the TaskStatus message.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>network_infos</td>
+          <td><a href="#mesos.NetworkInfo">NetworkInfo</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Credential">Credential</h3>
+    <p>Credential used in various places for authentication and
+authorization.</p><p>NOTE: A 'principal' is different from 'FrameworkInfo.user'. The
+former is used for authentication and authorization while the
+latter is used to determine the default user under which the
+framework's executors/tasks are run.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>principal</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>secret</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Credentials">Credentials</h3>
+    <p>Credentials used for framework authentication, HTTP authentication
+(where the common 'username' and 'password' are captured as
+'principal' and 'secret' respectively), etc.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>credentials</td>
+          <td><a href="#mesos.Credential">Credential</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.DiscoveryInfo">DiscoveryInfo</h3>
+    <p>Service discovery information.
+The visibility field restricts discovery within a framework (FRAMEWORK),
+within a Mesos cluster (CLUSTER), or places no restrictions (EXTERNAL).
+Each port in the ports field also has an optional visibility field.
+If visibility is specified for a port, it overrides the default service-wide
+DiscoveryInfo.visibility for that port.
+The environment, location, and version fields provide first class support for
+common attributes used to differentiate between similar services. The
+environment may receive values such as PROD/QA/DEV, the location field may
+receive values like EAST-US/WEST-US/EUROPE/AMEA, and the version field may
+receive values like v2.0/v0.9. The exact use of these fields is up to each
+service discovery system.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>visibility</td>
+          <td><a href="#mesos.DiscoveryInfo.Visibility">DiscoveryInfo.Visibility</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>environment</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>location</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>version</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ports</td>
+          <td><a href="#mesos.Ports">Ports</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.Labels">Labels</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.DurationInfo">DurationInfo</h3>
+    <p>Represents duration in nanoseconds.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>nanoseconds</td>
+          <td><a href="#int64">int64</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Environment">Environment</h3>
+    <p>Describes a collection of environment variables. This is used with
+CommandInfo in order to set environment variables before running a
+command.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>variables</td>
+          <td><a href="#mesos.Environment.Variable">Environment.Variable</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Environment.Variable">Environment.Variable</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ExecutorID">ExecutorID</h3>
+    <p>A framework generated ID to distinguish an executor. Only one
+executor with the same ID can be active on the same slave at a
+time.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ExecutorInfo">ExecutorInfo</h3>
+    <p>Describes information about an executor. The 'data' field can be
+used to pass arbitrary bytes to an executor.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>executor_id</td>
+          <td><a href="#mesos.ExecutorID">ExecutorID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>framework_id</td>
+          <td><a href="#mesos.FrameworkID">FrameworkID</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>command</td>
+          <td><a href="#mesos.CommandInfo">CommandInfo</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>container</td>
+          <td><a href="#mesos.ContainerInfo">ContainerInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>source</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>data</td>
+          <td><a href="#bytes">bytes</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>discovery</td>
+          <td><a href="#mesos.DiscoveryInfo">DiscoveryInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Filters">Filters</h3>
+    <p>Describes possible filters that can be applied to unused resources
+(see SchedulerDriver::launchTasks) to influence the allocator.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>refuse_seconds</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p> Default: 5</p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.FrameworkID">FrameworkID</h3>
+    <p>A unique ID assigned to a framework. A framework can reuse this ID
+in order to do failover (see MesosSchedulerDriver).</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.FrameworkInfo">FrameworkInfo</h3>
+    <p>Describes a framework.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>user</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>id</td>
+          <td><a href="#mesos.FrameworkID">FrameworkID</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>failover_timeout</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p> Default: 0</p></td>
+        </tr>
+        <tr>
+          <td>checkpoint</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p> Default: false</p></td>
+        </tr>
+        <tr>
+          <td>role</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p> Default: &quot;*&quot;</p></td>
+        </tr>
+        <tr>
+          <td>hostname</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>principal</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>webui_url</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>capabilities</td>
+          <td><a href="#mesos.FrameworkInfo.Capability">FrameworkInfo.Capability</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.Labels">Labels</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.FrameworkInfo.Capability">FrameworkInfo.Capability</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>type</td>
+          <td><a href="#mesos.FrameworkInfo.Capability.Type">FrameworkInfo.Capability.Type</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.HealthCheck">HealthCheck</h3>
+    <p>Describes a health check for a task or executor (or any arbitrary
+process/command). A &quot;strategy&quot; is picked by specifying one of the
+optional fields; currently only 'command' is supported.
+Specifying more than one strategy is an error.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>http</td>
+          <td><a href="#mesos.HealthCheck.HTTP">HealthCheck.HTTP</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>delay_seconds</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p> Default: 15</p></td>
+        </tr>
+        <tr>
+          <td>interval_seconds</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p> Default: 10</p></td>
+        </tr>
+        <tr>
+          <td>timeout_seconds</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p> Default: 20</p></td>
+        </tr>
+        <tr>
+          <td>consecutive_failures</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>optional</td>
+          <td><p> Default: 3</p></td>
+        </tr>
+        <tr>
+          <td>grace_period_seconds</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p> Default: 10</p></td>
+        </tr>
+        <tr>
+          <td>command</td>
+          <td><a href="#mesos.CommandInfo">CommandInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.HealthCheck.HTTP">HealthCheck.HTTP</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>port</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>path</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p> Default: &quot;/&quot;</p></td>
+        </tr>
+        <tr>
+          <td>statuses</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Image">Image</h3>
+    <p>Describe an image used by tasks or executors. Note that it's only
+for tasks or executors launched by MesosContainerizer currently.
+TODO(jieyu): This feature not fully supported in 0.24.0. Please do
+not use it until this feature is announced.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>type</td>
+          <td><a href="#mesos.Image.Type">Image.Type</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>appc</td>
+          <td><a href="#mesos.Image.Appc">Image.Appc</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>docker</td>
+          <td><a href="#mesos.Image.Docker">Image.Docker</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Image.Appc">Image.Appc</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>id</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.Labels">Labels</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Image.Docker">Image.Docker</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.InverseOffer">InverseOffer</h3>
+    <p>A request to return some resources occupied by a framework.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>id</td>
+          <td><a href="#mesos.OfferID">OfferID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>url</td>
+          <td><a href="#mesos.URL">URL</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>framework_id</td>
+          <td><a href="#mesos.FrameworkID">FrameworkID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>slave_id</td>
+          <td><a href="#mesos.SlaveID">SlaveID</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>unavailability</td>
+          <td><a href="#mesos.Unavailability">Unavailability</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Label">Label</h3>
+    <p>Key, value pair used to store free form user-data.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>key</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Labels">Labels</h3>
+    <p>Collection of labels.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.Label">Label</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.MachineID">MachineID</h3>
+    <p>Represents a single machine, which may hold one or more slaves.</p><p>NOTE: In order to match a slave to a machine, both the `hostname` and
+`ip` must match the values advertised by the slave to the master.
+Hostname is not case-sensitive.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>hostname</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ip</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.MachineInfo">MachineInfo</h3>
+    <p>Holds information about a single machine, its `mode`, and any other
+relevant information which may affect the behavior of the machine.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>id</td>
+          <td><a href="#mesos.MachineID">MachineID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mode</td>
+          <td><a href="#mesos.MachineInfo.Mode">MachineInfo.Mode</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>unavailability</td>
+          <td><a href="#mesos.Unavailability">Unavailability</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.MasterInfo">MasterInfo</h3>
+    <p>Describes a master. This will probably have more fields in the
+future which might be used, for example, to link a framework webui
+to a master webui.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>id</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ip</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>port</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>required</td>
+          <td><p> Default: 5050</p></td>
+        </tr>
+        <tr>
+          <td>pid</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>hostname</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>version</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>address</td>
+          <td><a href="#mesos.Address">Address</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.NetworkInfo">NetworkInfo</h3>
+    <p>Describes a network request from a framework as well as network resolution
+provided by Mesos.</p><p>A Framework may request the network isolator on the Agent to isolate the
+container in a network namespace and create a virtual network interface.
+The `NetworkInfo` message describes the properties of that virtual
+interface, including the IP addresses and network isolation policy
+(network group membership).</p><p>The NetworkInfo message is not interpreted by the Master or Agent and is
+intended to be used by Agent and Master modules implementing network
+isolation. If the modules are missing, the message is simply ignored. In
+future, the task launch will fail if there is no module providing the
+network isolation capabilities (MESOS-3390).</p><p>An executor, Agent, or an Agent module may append NetworkInfos inside
+TaskStatus::container_status to provide information such as the container IP
+address and isolation groups.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ip_addresses</td>
+          <td><a href="#mesos.NetworkInfo.IPAddress">NetworkInfo.IPAddress</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>protocol</td>
+          <td><a href="#mesos.NetworkInfo.Protocol">NetworkInfo.Protocol</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ip_address</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>groups</td>
+          <td><a href="#string">string</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.Labels">Labels</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.NetworkInfo.IPAddress">NetworkInfo.IPAddress</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>protocol</td>
+          <td><a href="#mesos.NetworkInfo.Protocol">NetworkInfo.Protocol</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ip_address</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer">Offer</h3>
+    <p>Describes some resources available on a slave. An offer only
+contains resources from a single slave.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>id</td>
+          <td><a href="#mesos.OfferID">OfferID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>framework_id</td>
+          <td><a href="#mesos.FrameworkID">FrameworkID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>slave_id</td>
+          <td><a href="#mesos.SlaveID">SlaveID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>hostname</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>url</td>
+          <td><a href="#mesos.URL">URL</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>attributes</td>
+          <td><a href="#mesos.Attribute">Attribute</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>executor_ids</td>
+          <td><a href="#mesos.ExecutorID">ExecutorID</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>unavailability</td>
+          <td><a href="#mesos.Unavailability">Unavailability</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer.Operation">Offer.Operation</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>type</td>
+          <td><a href="#mesos.Offer.Operation.Type">Offer.Operation.Type</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>launch</td>
+          <td><a href="#mesos.Offer.Operation.Launch">Offer.Operation.Launch</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>reserve</td>
+          <td><a href="#mesos.Offer.Operation.Reserve">Offer.Operation.Reserve</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>unreserve</td>
+          <td><a href="#mesos.Offer.Operation.Unreserve">Offer.Operation.Unreserve</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>create</td>
+          <td><a href="#mesos.Offer.Operation.Create">Offer.Operation.Create</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>destroy</td>
+          <td><a href="#mesos.Offer.Operation.Destroy">Offer.Operation.Destroy</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer.Operation.Create">Offer.Operation.Create</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>volumes</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer.Operation.Destroy">Offer.Operation.Destroy</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>volumes</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer.Operation.Launch">Offer.Operation.Launch</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>task_infos</td>
+          <td><a href="#mesos.TaskInfo">TaskInfo</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer.Operation.Reserve">Offer.Operation.Reserve</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer.Operation.Unreserve">Offer.Operation.Unreserve</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.OfferID">OfferID</h3>
+    <p>A unique ID assigned to an offer.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Parameter">Parameter</h3>
+    <p>A generic (key, value) pair used in various places for parameters.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>key</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Parameters">Parameters</h3>
+    <p>Collection of Parameter.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>parameter</td>
+          <td><a href="#mesos.Parameter">Parameter</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.PerfStatistics">PerfStatistics</h3>
+    <p>Describes a sample of events from &quot;perf stat&quot;. Only available on
+Linux.</p><p>NOTE: Each optional field matches the name of a perf event (see
+&quot;perf list&quot;) with the following changes:
+1. Names are downcased.
+2. Hyphens ('-') are replaced with underscores ('_').
+3. Events with alternate names use the name &quot;perf stat&quot; returns,
+   e.g., for the event &quot;cycles OR cpu-cycles&quot; perf always returns
+   cycles.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>timestamp</td>
+          <td><a href="#double">double</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>duration</td>
+          <td><a href="#double">double</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cycles</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>stalled_cycles_frontend</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>stalled_cycles_backend</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>instructions</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cache_references</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cache_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>branches</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>branch_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>bus_cycles</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ref_cycles</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpu_clock</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>task_clock</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>page_faults</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>minor_faults</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>major_faults</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>context_switches</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpu_migrations</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>alignment_faults</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>emulation_faults</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_dcache_loads</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_dcache_load_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_dcache_stores</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_dcache_store_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_dcache_prefetches</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_dcache_prefetch_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_icache_loads</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_icache_load_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_icache_prefetches</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>l1_icache_prefetch_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>llc_loads</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>llc_load_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>llc_stores</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>llc_store_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>llc_prefetches</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>llc_prefetch_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>dtlb_loads</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>dtlb_load_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>dtlb_stores</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>dtlb_store_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>dtlb_prefetches</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>dtlb_prefetch_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>itlb_loads</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>itlb_load_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>branch_loads</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>branch_load_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>node_loads</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>node_load_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>node_stores</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>node_store_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>node_prefetches</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>node_prefetch_misses</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Port">Port</h3>
+    <p>Named port used for service discovery.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>number</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>protocol</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>visibility</td>
+          <td><a href="#mesos.DiscoveryInfo.Visibility">DiscoveryInfo.Visibility</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Ports">Ports</h3>
+    <p>Collection of ports.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>ports</td>
+          <td><a href="#mesos.Port">Port</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.RateLimit">RateLimit</h3>
+    <p>Rate (queries per second, QPS) limit for messages from a framework to master.
+Strictly speaking they are the combined rate from all frameworks of the same
+principal.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>qps</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>principal</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>capacity</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.RateLimits">RateLimits</h3>
+    <p>Collection of RateLimit.
+Frameworks without rate limits defined here are not throttled unless
+'aggregate_default_qps' is specified.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>limits</td>
+          <td><a href="#mesos.RateLimit">RateLimit</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>aggregate_default_qps</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>aggregate_default_capacity</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Request">Request</h3>
+    <p>Describes a request for resources that can be used by a framework
+to proactively influence the allocator.  If 'slave_id' is provided
+then this request is assumed to only apply to resources on that
+slave.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>slave_id</td>
+          <td><a href="#mesos.SlaveID">SlaveID</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Resource">Resource</h3>
+    <p>Describes a resource on a machine. A resource can take on one of
+three types: scalar (double), a list of finite and discrete ranges
+(e.g., [1-10, 20-30]), or a set of items. A resource is described
+using the standard protocol buffer &quot;union&quot; trick.</p><p>TODO(benh): Add better support for &quot;expected&quot; resources (e.g.,
+cpus, memory, disk, network).</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>type</td>
+          <td><a href="#mesos.Value.Type">Value.Type</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>scalar</td>
+          <td><a href="#mesos.Value.Scalar">Value.Scalar</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ranges</td>
+          <td><a href="#mesos.Value.Ranges">Value.Ranges</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>set</td>
+          <td><a href="#mesos.Value.Set">Value.Set</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>role</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p> Default: &quot;*&quot;</p></td>
+        </tr>
+        <tr>
+          <td>reservation</td>
+          <td><a href="#mesos.Resource.ReservationInfo">Resource.ReservationInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>disk</td>
+          <td><a href="#mesos.Resource.DiskInfo">Resource.DiskInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>revocable</td>
+          <td><a href="#mesos.Resource.RevocableInfo">Resource.RevocableInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Resource.DiskInfo">Resource.DiskInfo</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>persistence</td>
+          <td><a href="#mesos.Resource.DiskInfo.Persistence">Resource.DiskInfo.Persistence</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>volume</td>
+          <td><a href="#mesos.Volume">Volume</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Resource.DiskInfo.Persistence">Resource.DiskInfo.Persistence</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>id</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Resource.ReservationInfo">Resource.ReservationInfo</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>principal</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Resource.RevocableInfo">Resource.RevocableInfo</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    <h3 id="mesos.ResourceStatistics">ResourceStatistics</h3>
+    <p>A snapshot of resource usage statistics.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>timestamp</td>
+          <td><a href="#double">double</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>processes</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>threads</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpus_user_time_secs</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpus_system_time_secs</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpus_limit</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpus_nr_periods</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpus_nr_throttled</td>
+          <td><a href="#uint32">uint32</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>cpus_throttled_time_secs</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_total_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_total_memsw_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_limit_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_soft_limit_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_file_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_anon_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_cache_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_rss_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_mapped_file_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_swap_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_unevictable_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_low_pressure_counter</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_medium_pressure_counter</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>mem_critical_pressure_counter</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>disk_limit_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>disk_used_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>perf</td>
+          <td><a href="#mesos.PerfStatistics">PerfStatistics</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_rx_packets</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_rx_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_rx_errors</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_rx_dropped</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tx_packets</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tx_bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tx_errors</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tx_dropped</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tcp_rtt_microsecs_p50</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tcp_rtt_microsecs_p90</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tcp_rtt_microsecs_p95</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tcp_rtt_microsecs_p99</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tcp_active_connections</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_tcp_time_wait_connections</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>net_traffic_control_statistics</td>
+          <td><a href="#mesos.TrafficControlStatistics">TrafficControlStatistics</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ResourceUsage">ResourceUsage</h3>
+    <p>Describes a snapshot of the resource usage for executors.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>executors</td>
+          <td><a href="#mesos.ResourceUsage.Executor">ResourceUsage.Executor</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>total</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ResourceUsage.Executor">ResourceUsage.Executor</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>executor_info</td>
+          <td><a href="#mesos.ExecutorInfo">ExecutorInfo</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>allocated</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>statistics</td>
+          <td><a href="#mesos.ResourceStatistics">ResourceStatistics</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>container_id</td>
+          <td><a href="#mesos.ContainerID">ContainerID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.SlaveID">SlaveID</h3>
+    <p>A unique ID assigned to a slave. Currently, a slave gets a new ID
+whenever it (re)registers with Mesos. Framework writers shouldn't
+assume any binding between a slave ID and and a hostname.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.SlaveInfo">SlaveInfo</h3>
+    <p>Describes a slave. Note that the 'id' field is only available after
+a slave is registered with the master, and is made available here
+to facilitate re-registration.  If checkpoint is set, the slave is
+checkpointing its own information and potentially frameworks'
+information (if a framework has checkpointing enabled).</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>hostname</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>port</td>
+          <td><a href="#int32">int32</a></td>
+          <td>optional</td>
+          <td><p> Default: 5051</p></td>
+        </tr>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>attributes</td>
+          <td><a href="#mesos.Attribute">Attribute</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>id</td>
+          <td><a href="#mesos.SlaveID">SlaveID</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>checkpoint</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p> Default: false</p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TaskID">TaskID</h3>
+    <p>A framework generated ID to distinguish a task. The ID must remain
+unique while the task is active. However, a framework can reuse an
+ID _only_ if a previous task with the same ID has reached a
+terminal state (e.g., TASK_FINISHED, TASK_LOST, TASK_KILLED, etc.).</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TaskInfo">TaskInfo</h3>
+    <p>Describes a task. Passed from the scheduler all the way to an
+executor (see SchedulerDriver::launchTasks and
+Executor::launchTask). Either ExecutorInfo or CommandInfo should be set.
+A different executor can be used to launch this task, and subsequent tasks
+meant for the same executor can reuse the same ExecutorInfo struct.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>name</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>task_id</td>
+          <td><a href="#mesos.TaskID">TaskID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>slave_id</td>
+          <td><a href="#mesos.SlaveID">SlaveID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>resources</td>
+          <td><a href="#mesos.Resource">Resource</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>executor</td>
+          <td><a href="#mesos.ExecutorInfo">ExecutorInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>command</td>
+          <td><a href="#mesos.CommandInfo">CommandInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>container</td>
+          <td><a href="#mesos.ContainerInfo">ContainerInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>data</td>
+          <td><a href="#bytes">bytes</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>health_check</td>
+          <td><a href="#mesos.HealthCheck">HealthCheck</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.Labels">Labels</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>discovery</td>
+          <td><a href="#mesos.DiscoveryInfo">DiscoveryInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TaskStatus">TaskStatus</h3>
+    <p>Describes the current status of a task.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>task_id</td>
+          <td><a href="#mesos.TaskID">TaskID</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>state</td>
+          <td><a href="#mesos.TaskState">TaskState</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>message</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>source</td>
+          <td><a href="#mesos.TaskStatus.Source">TaskStatus.Source</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>reason</td>
+          <td><a href="#mesos.TaskStatus.Reason">TaskStatus.Reason</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>data</td>
+          <td><a href="#bytes">bytes</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>slave_id</td>
+          <td><a href="#mesos.SlaveID">SlaveID</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>executor_id</td>
+          <td><a href="#mesos.ExecutorID">ExecutorID</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>timestamp</td>
+          <td><a href="#double">double</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>uuid</td>
+          <td><a href="#bytes">bytes</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>healthy</td>
+          <td><a href="#bool">bool</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>labels</td>
+          <td><a href="#mesos.Labels">Labels</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>container_status</td>
+          <td><a href="#mesos.ContainerStatus">ContainerStatus</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TimeInfo">TimeInfo</h3>
+    <p>Represents time since the epoch, in nanoseconds.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>nanoseconds</td>
+          <td><a href="#int64">int64</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TrafficControlStatistics">TrafficControlStatistics</h3>
+    <p>When the network bandwidth caps are enabled and the container
+is over its limit, outbound packets may be either delayed or
+dropped completely either because it exceeds the maximum bandwidth
+allocation for a single container (the cap) or because the combined
+network traffic of multiple containers on the host exceeds the
+transmit capacity of the host (the share). We can report the
+following statistics for each of these conditions exported directly
+from the Linux Traffic Control Queueing Discipline.</p><p>id         : name of the limiter, e.g. 'tx_bw_cap'
+backlog    : number of packets currently delayed
+bytes      : total bytes seen
+drops      : number of packets dropped in total
+overlimits : number of packets which exceeded allocation
+packets    : total packets seen
+qlen       : number of packets currently queued
+rate_bps   : throughput in bytes/sec
+rate_pps   : throughput in packets/sec
+requeues   : number of times a packet has been delayed due to
+             locking or device contention issues</p><p>More information on the operation of Linux Traffic Control can be
+found at http://www.lartc.org/lartc.html.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>id</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>backlog</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>bytes</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>drops</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>overlimits</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>packets</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>qlen</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ratebps</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ratepps</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>requeues</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.URL">URL</h3>
+    <p>Represents a URL.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>scheme</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>address</td>
+          <td><a href="#mesos.Address">Address</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>path</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>query</td>
+          <td><a href="#mesos.Parameter">Parameter</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>fragment</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Unavailability">Unavailability</h3>
+    <p>Represents an interval, from a given start time over a given duration.
+This interval pertains to an unavailability event, such as maintenance,
+and is not a generic interval.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>start</td>
+          <td><a href="#mesos.TimeInfo">TimeInfo</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>duration</td>
+          <td><a href="#mesos.DurationInfo">DurationInfo</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Value">Value</h3>
+    <p>Describes an Attribute or Resource &quot;value&quot;. A value is described
+using the standard protocol buffer &quot;union&quot; trick.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>type</td>
+          <td><a href="#mesos.Value.Type">Value.Type</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>scalar</td>
+          <td><a href="#mesos.Value.Scalar">Value.Scalar</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>ranges</td>
+          <td><a href="#mesos.Value.Ranges">Value.Ranges</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>set</td>
+          <td><a href="#mesos.Value.Set">Value.Set</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>text</td>
+          <td><a href="#mesos.Value.Text">Value.Text</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Value.Range">Value.Range</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>begin</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>end</td>
+          <td><a href="#uint64">uint64</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Value.Ranges">Value.Ranges</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>range</td>
+          <td><a href="#mesos.Value.Range">Value.Range</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Value.Scalar">Value.Scalar</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#double">double</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Value.Set">Value.Set</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>item</td>
+          <td><a href="#string">string</a></td>
+          <td>repeated</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Value.Text">Value.Text</h3>
+    <p></p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>value</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Volume">Volume</h3>
+    <p>Describes a volume mapping either from host to container or vice
+versa. Both paths can either refer to a directory or a file.</p>
+    <table class="field-table">
+      <thead>
+        <tr><td>Field</td><td>Type</td><td>Label</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>mode</td>
+          <td><a href="#mesos.Volume.Mode">Volume.Mode</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>container_path</td>
+          <td><a href="#string">string</a></td>
+          <td>required</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>host_path</td>
+          <td><a href="#string">string</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>image</td>
+          <td><a href="#mesos.Image">Image</a></td>
+          <td>optional</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerInfo.DockerInfo.Network">ContainerInfo.DockerInfo.Network</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>HOST</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>BRIDGE</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>NONE</td>
+          <td>3</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.ContainerInfo.Type">ContainerInfo.Type</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DOCKER</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>MESOS</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.DiscoveryInfo.Visibility">DiscoveryInfo.Visibility</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>FRAMEWORK</td>
+          <td>0</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>CLUSTER</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>EXTERNAL</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.FrameworkInfo.Capability.Type">FrameworkInfo.Capability.Type</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>REVOCABLE_RESOURCES</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Image.Type">Image.Type</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>APPC</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>DOCKER</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.MachineInfo.Mode">MachineInfo.Mode</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>UP</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>DRAINING</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>DOWN</td>
+          <td>3</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.NetworkInfo.Protocol">NetworkInfo.Protocol</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>IPv4</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>IPv6</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Offer.Operation.Type">Offer.Operation.Type</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>LAUNCH</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>RESERVE</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>UNRESERVE</td>
+          <td>3</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>CREATE</td>
+          <td>4</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>DESTROY</td>
+          <td>5</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Status">Status</h3>
+    <p>Status is used to indicate the state of the scheduler and executor
+driver after function calls.</p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>DRIVER_NOT_STARTED</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>DRIVER_RUNNING</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>DRIVER_ABORTED</td>
+          <td>3</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>DRIVER_STOPPED</td>
+          <td>4</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TaskState">TaskState</h3>
+    <p>Describes possible task states. IMPORTANT: Mesos assumes tasks that
+enter terminal states (see below) imply the task is no longer
+running and thus clean up any thing associated with the task
+(ultimately offering any resources being consumed by that task to
+another task).</p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>TASK_STAGING</td>
+          <td>6</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TASK_STARTING</td>
+          <td>0</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TASK_RUNNING</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TASK_FINISHED</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TASK_FAILED</td>
+          <td>3</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TASK_KILLED</td>
+          <td>4</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TASK_LOST</td>
+          <td>5</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TASK_ERROR</td>
+          <td>7</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TaskStatus.Reason">TaskStatus.Reason</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>REASON_COMMAND_EXECUTOR_FAILED</td>
+          <td>0</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_CONTAINER_LAUNCH_FAILED</td>
+          <td>21</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_CONTAINER_LIMITATION</td>
+          <td>19</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_CONTAINER_LIMITATION_DISK</td>
+          <td>20</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_CONTAINER_LIMITATION_MEMORY</td>
+          <td>8</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_CONTAINER_PREEMPTED</td>
+          <td>17</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_CONTAINER_UPDATE_FAILED</td>
+          <td>22</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_EXECUTOR_REGISTRATION_TIMEOUT</td>
+          <td>23</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_EXECUTOR_REREGISTRATION_TIMEOUT</td>
+          <td>24</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_EXECUTOR_TERMINATED</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_EXECUTOR_UNREGISTERED</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_FRAMEWORK_REMOVED</td>
+          <td>3</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_GC_ERROR</td>
+          <td>4</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_INVALID_FRAMEWORKID</td>
+          <td>5</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_INVALID_OFFERS</td>
+          <td>6</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_MASTER_DISCONNECTED</td>
+          <td>7</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_RECONCILIATION</td>
+          <td>9</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_RESOURCES_UNKNOWN</td>
+          <td>18</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_SLAVE_DISCONNECTED</td>
+          <td>10</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_SLAVE_REMOVED</td>
+          <td>11</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_SLAVE_RESTARTED</td>
+          <td>12</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_SLAVE_UNKNOWN</td>
+          <td>13</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_TASK_INVALID</td>
+          <td>14</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_TASK_UNAUTHORIZED</td>
+          <td>15</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>REASON_TASK_UNKNOWN</td>
+          <td>16</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.TaskStatus.Source">TaskStatus.Source</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SOURCE_MASTER</td>
+          <td>0</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>SOURCE_SLAVE</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>SOURCE_EXECUTOR</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Value.Type">Value.Type</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>SCALAR</td>
+          <td>0</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>RANGES</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>SET</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>TEXT</td>
+          <td>3</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+    <h3 id="mesos.Volume.Mode">Volume.Mode</h3>
+    <p></p>
+    <table class="enum-table">
+      <thead>
+        <tr><td>Name</td><td>Number</td><td>Description</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>RW</td>
+          <td>1</td>
+          <td><p></p></td>
+        </tr>
+        <tr>
+          <td>RO</td>
+          <td>2</td>
+          <td><p></p></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2 id="scalar-value-types">Scalar Value Types</h2>
+    <table class="scalar-value-types-table">
+      <thead>
+        <tr><td>.proto Type</td><td>Notes</td><td>C++ Type</td><td>Java Type</td><td>Python Type</td></tr>
+      </thead>
+      <tbody>
+        <tr id="double">
+          <td>double</td>
+          <td></td>
+          <td>double</td>
+          <td>double</td>
+          <td>float</td>
+        </tr>
+        <tr id="float">
+          <td>float</td>
+          <td></td>
+          <td>float</td>
+          <td>float</td>
+          <td>float</td>
+        </tr>
+        <tr id="int32">
+          <td>int32</td>
+          <td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint32 instead.</td>
+          <td>int32</td>
+          <td>int</td>
+          <td>int</td>
+        </tr>
+        <tr id="int64">
+          <td>int64</td>
+          <td>Uses variable-length encoding. Inefficient for encoding negative numbers – if your field is likely to have negative values, use sint64 instead.</td>
+          <td>int64</td>
+          <td>long</td>
+          <td>int/long</td>
+        </tr>
+        <tr id="uint32">
+          <td>uint32</td>
+          <td>Uses variable-length encoding.</td>
+          <td>uint32</td>
+          <td>int</td>
+          <td>int/long</td>
+        </tr>
+        <tr id="uint64">
+          <td>uint64</td>
+          <td>Uses variable-length encoding.</td>
+          <td>uint64</td>
+          <td>long</td>
+          <td>int/long</td>
+        </tr>
+        <tr id="sint32">
+          <td>sint32</td>
+          <td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int32s.</td>
+          <td>int32</td>
+          <td>int</td>
+          <td>int</td>
+        </tr>
+        <tr id="sint64">
+          <td>sint64</td>
+          <td>Uses variable-length encoding. Signed int value. These more efficiently encode negative numbers than regular int64s.</td>
+          <td>int64</td>
+          <td>long</td>
+          <td>int/long</td>
+        </tr>
+        <tr id="fixed32">
+          <td>fixed32</td>
+          <td>Always four bytes. More efficient than uint32 if values are often greater than 2^28.</td>
+          <td>uint32</td>
+          <td>int</td>
+          <td>int</td>
+        </tr>
+        <tr id="fixed64">
+          <td>fixed64</td>
+          <td>Always eight bytes. More efficient than uint64 if values are often greater than 2^56.</td>
+          <td>uint64</td>
+          <td>long</td>
+          <td>int/long</td>
+        </tr>
+        <tr id="sfixed32">
+          <td>sfixed32</td>
+          <td>Always four bytes.</td>
+          <td>int32</td>
+          <td>int</td>
+          <td>int</td>
+        </tr>
+        <tr id="sfixed64">
+          <td>sfixed64</td>
+          <td>Always eight bytes.</td>
+          <td>int64</td>
+          <td>long</td>
+          <td>int/long</td>
+        </tr>
+        <tr id="bool">
+          <td>bool</td>
+          <td></td>
+          <td>bool</td>
+          <td>boolean</td>
+          <td>boolean</td>
+        </tr>
+        <tr id="string">
+          <td>string</td>
+          <td>A string must always contain UTF-8 encoded or 7-bit ASCII text.</td>
+          <td>string</td>
+          <td>String</td>
+          <td>str/unicode</td>
+        </tr>
+        <tr id="bytes">
+          <td>bytes</td>
+          <td>May contain any arbitrary sequence of bytes.</td>
+          <td>string</td>
+          <td>ByteString</td>
+          <td>str</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </body>
+</html>

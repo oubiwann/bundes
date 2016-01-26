@@ -4,22 +4,25 @@
   :license {:name "MIT License"}
   :aot :all
   :main bundes.main
-  :dependencies [[org.clojure/clojure                  "1.7.0"]
+  :dependencies [[org.clojure/clojure                  "1.8.0"]
                  [org.clojure/tools.logging            "0.3.1"]
                  [org.clojure/tools.cli                "0.3.2"]
                  [org.clojure/core.match               "0.3.0-alpha4"]
-                 [spootnik/mesomatic                   "0.23.0-r0"]
-                 [spootnik/mesomatic-async             "0.23.0-r0"]
-                 [spootnik/unilog                      "0.7.8"]
+                 [com.stuartsierra/component           "0.3.1"]
+                 [prismatic/schema                     "1.0.4"]
+                 [spootnik/mesomatic                   "0.27.0-r0"]
+                 [spootnik/mesomatic-async             "0.27.0-r0"]
+                 [spootnik/unilog                      "0.7.13"]
                  [spootnik/watchman                    "0.3.5"]
-                 [spootnik/net                         "0.2.7"]
+                 [spootnik/net                         "0.2.8"]
+                 [spootnik/reporter                    "0.1.3"]
+                 [spootnik/uncaught                    "0.5.3"]
+                 [riemann-clojure-client               "0.4.1"
+                  :exclusions [com.aphyr/riemann-java-client]]
+                 [metrics-clojure                      "2.6.1"]
+                 [metrics-clojure-riemann              "2.6.1"]
+                 [metrics-clojure-jvm                  "2.6.1"]
+                 [cheshire                             "5.5.0"]
+                 [bidi                                 "1.25.0"]
                  [im.chit/cronj                        "1.4.4"]
-                 [ring/ring-defaults                   "0.1.5"]
-                 [ring/ring-core                       "1.4.0"
-                  :exclusions [org.clojure/tools.reader]]
-                 [ring/ring-json                       "0.4.0"]
-                 [compojure                            "1.4.0"]
-                 [clj-yaml                             "0.4.0"]
-                 [org.apache.curator/curator-recipes   "2.8.0"]
-                 [org.apache.curator/curator-framework "2.8.0"]
                  [riemann-clojure-client               "0.4.1"]])

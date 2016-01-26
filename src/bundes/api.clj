@@ -1,27 +1,86 @@
 (ns bundes.api
   "HTTP API facade"
-  (:require [bundes.unit          :as u]
-            [compojure.route      :as route]
-            [ring.middleware.json :as json]
-            [ring.util.response   :refer [response status redirect]]
-            [net.http.server      :refer [run-server]]
-            [compojure.core       :refer [GET PUT routes]]))
+  (:require [com.stuartsierra.component :as com]
+            [bundes.db                  :as db]
+            [spootnik.reporter            :as r]
+            [cheshire.core              :as json]
+            [bidi.bidi                  :refer [match-route*]]
+            [net.http.server            :refer [run-server]]
+            [clojure.tools.logging      :refer [info error]]))
 
-(defn api-routes
-  "Build a ring handler around a unit registry"
-  [reg]
-  (->
-   (routes
-    (GET "/units" []                 (response @reg))
-    (PUT "/units/:id/suspend" [id]   (response (u/suspend reg (keyword id))))
-    (PUT "/units/:id/unsuspend" [id] (response (u/unsuspend reg (keyword id))))
-    (PUT "/units/:id" [id]           (response))
-    (route/resources                 "/")
-    (route/not-found                 "<html><h2>404</h2></html>"))
-   (json/wrap-json-body)
-   (json/wrap-json-response)))
+(def api-routes
+  ["/units" [[""                  {:get :unit-list}]
+             [["/" :id "/pause"]  {:put :unit-pause}]
+             [["/" :id "/resume"] {:put :unit-resume}]]])
 
-(defn start!
-  "Run the ring-handler with jetty"
-  [config reg]
-  (run-server config (api-routes reg)))
+(defn decode-input
+  [{:keys [body] :as request}]
+  (assoc request :body (json/parse-string body true)))
+
+(defn encode-output
+  [{:keys [body] :as request}]
+  (-> request
+      (update :body json/generate-string)
+      (assoc-in [:headers :content-type] "application/json")))
+
+(defn match-route
+  [{:keys [uri] :as request}]
+  (match-route* api-routes uri request))
+
+(defn response
+  [body]
+  {:status 200 :body body})
+
+(defmulti dispatch :handler)
+
+(defmethod dispatch :unit-list
+  [{:keys [db]}]
+  (response {:units (db/list-units db)}))
+
+(defmethod dispatch :unit-pause
+  [{:keys [route-params db] :as request}]
+  (response {:units (db/pause! db (keyword (:id route-params)))}))
+
+(defmethod dispatch :unit-resume
+  [{:keys [route-params db]}]
+  (response {:units (db/resume! db (keyword (:id route-params)))}))
+
+(defmethod dispatch :default
+  [request]
+  {:status 404
+   :body {:message "invalid route"}})
+
+(defn handler-fn
+  [{:keys [reporter db]}]
+  (fn [request]
+    (try
+      (-> request
+          (match-route)
+          (decode-input)
+          (assoc :db db)
+          (dispatch)
+          (encode-output))
+      (catch Exception e
+        (let [{:keys [status message silence?]} (ex-data e)]
+          (when-not silence?
+            (error e "cannot process HTTP request")
+            (r/capture! reporter e))
+          {:status  (or status 500)
+           :headers {:content-type "application/json"}
+           :body    (json/generate-string
+                     {:message (or message (.getMessage e))})})))))
+
+(defrecord BundesApi [port options bind-addr db reporter server]
+  com/Lifecycle
+  (start [this]
+    (assoc this :server (run-server (assoc options :port port)
+                                    (handler-fn this))))
+  (stop [this]
+    (server)
+    (assoc this :server nil)))
+
+(defn make-api
+  ([]
+   (map->BundesApi nil))
+  ([api]
+   (map->BundesApi api)))

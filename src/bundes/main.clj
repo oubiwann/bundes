@@ -1,44 +1,65 @@
 (ns bundes.main
-  "Our main entry point. Reads configuration
-   and sets up vital functions:
+  "Bundes provides orchestration for batch jobs and long running
+   process across several machines, on top of Apache Mesos. Batch
+   and Daemon workloads are express as \"units\", simple definitions.
 
-   - Watch configured unit directory for changes
-   - Start HTTP API.
-   - Update configuration map based on events in
-     the unit directory and HTTP API commands.
-   - Start a scheduler for batch units.
-   - Register a mesos framework.
+   For details and the full rationale behind bundes, please see
+   https://github.com/pyr/bundes.
 
-   We use a couple of methods to ensure as much decoupling as possible
-   between components:
+   This namespace is the program's entry point. Reads configuration
+   and sets a component system.
+   See https://github.com/stuartsierra/component
+   for a detailed explanation of the component library.
 
-   - Unit configuration is done in stored in a clojure atom.
-   - The atom is watched through add-watch.
-   - Interaction with the scheduler and framework is done
-     through a multimethod."
+   Functionaly wise, bundes sets up a graph of components
+   interacting with each other, see `make-system` for details
+   on the dependency specifications. The components are:
+
+   - `watcher`, which listens to filesystem events to
+     build a database of units.
+   - `api` which exposes a way to inspect unit states
+   - `db` holds a database of units and signals when changes occur.
+   - `engine` based on database changes, makes decisions on which
+      side-effect to perform.
+   - `ticker` scheduling facilities each tick for a scheduled job
+      is just a request for a side-effect
+   - `framework`
+
+"
   (:gen-class)
-  (:require [bundes.unit            :as unit]
-            [bundes.mesos           :as mesos]
-            [bundes.api             :as api]
-            [bundes.watch           :as watch]
-            [bundes.tick            :as tick]
-            [bundes.cluster         :as cluster]
-            [bundes.service         :as service]
-            [bundes.decisions       :refer [decisions]]
-            [bundes.effect          :refer [perform-effect]]
-            [unilog.config          :refer [start-logging!]]
-            [clj-yaml.core          :refer [parse-string]]
-            [clojure.tools.logging  :refer [info debug]]
-            [clojure.tools.cli      :refer [cli]]))
+  (:require [clojure.edn                :as edn]
+            [com.stuartsierra.component :as com]
+            [schema.core                :as s]
+            [bundes.db                  :as db]
+            [bundes.framework           :as framework]
+            [bundes.api                 :as api]
+            [bundes.watcher             :as watcher]
+            [bundes.ticker              :as ticker]
+            [spootnik.reporter          :as reporter]
+            [bundes.engine              :as engine]
+            [clojure.tools.logging      :refer [info debug error]]
+            [unilog.config              :refer [start-logging!]]
+            [clojure.tools.cli          :refer [cli]]))
+
+(def config-schema
+  {:logging                   s/Any
+   :http                      {:port                     s/Num
+                               (s/optional-key :options) s/Any}
+   :unit-dir                  s/Str
+   :zookeeper                 {:conn s/Str}
+   :mesos                     {:master s/Str}
+   (s/optional-key :reporter) reporter/config-schema})
 
 (defn read-config
-  "Loads a YAML configuration. No post-processing but
+  "Loads an EDN configuration. No post-processing but
    exits on errors."
   [path]
   (try
-    (-> (or path (System/getenv "BUNDES_CONFIGURATION") "/etc/bundes/main.yml")
-        slurp
-        parse-string)
+    (let [validator (partial s/validate config-schema)]
+      (-> (or path (System/getenv "BUNDES_CONFIGURATION") "/etc/bundes/server.clj")
+          slurp
+          edn/read-string
+          validator))
     (catch Exception o_O
       (binding [*out* *err*]
         (println "Could not read configuration: " (.getMessage o_O))
@@ -56,56 +77,74 @@
         (println "Could not parse arguments: " (.getMessage o_O))
         (System/exit 1)))))
 
-(defn converge-topology
-  "The expected state of the world, held in our atom, has changed.
-   Run a diff of both state which will yield a list of side effects
-   to be performed.
 
-   Run through that list"
-  [system _ _ old new]
-  (let [side-effects (decisions old new)]
-    (info "the world has changed, converging!")
-    (doseq [effect side-effects]
-      (perform-effect (merge system effect)))))
 
-(defn make-service
-  "This is the crux of the namespace, where everything gets started
-   and glued together."
-  [config]
-  (let [uuid (str (java.util.UUID/randomUUID))]
-    (reify
-      service/Service
-      (get-id [this]
-        uuid)
-      (start! [this]
-        (let [db     (atom {})                       ;; 1. Hold config in atom
-              reg    (unit/atom-registry db)         ;; 2. Mimick a transient
-              mesos  (mesos/framework! config)       ;; 3. Register w/ mesos
-              ticker (tick/create!)                  ;; 4. Start scheduler
-              system {:ticker ticker :mesos mesos}]  ;; 5. Prepare system
-          (watch/watch-units reg (:unit-dir config)) ;; 6. Watch unit dir
-          (converge-topology system nil nil {} @db)  ;; 7. First converge
-          (add-watch db :synchronizer                ;; 8. Watch for changes
-                     (partial converge-topology system))
-          (api/start! (:service config) reg)))
-      (stop! [this]))))                              ;; 9. Start HTTP API
+(defn make-system
+  [{:keys [unit-dir mesos http reporter zookeeper]}]
+  (com/system-using
+   (com/system-map
+    :api       (api/make-api http)
+    :watcher   (watcher/make-watcher unit-dir)
+    :db        (db/make-db)
+    :ticker    (ticker/make-ticker)
+    :framework (framework/make-framework mesos)
+    :engine    (engine/make-engine)
+    :reporter  (reporter/make-reporter reporter))
+   {:api       [:reporter :db]
+    :watcher   [:reporter :db]
+    :db        [:reporter]
+    :engine    [:reporter :db :ticker :framework]
+    :ticker    [:reporter]
+    :framework [:reporter :db]}))
+
+(defmacro with-handler
+  [signal & body]
+  `(sun.misc.Signal/handle
+    (sun.misc.Signal. (-> ~signal name .toUpperCase))
+    (proxy [sun.misc.SignalHandler] [] (handle [sig#] ~@body))))
 
 (defn -main
   "Executable entry point, parse options, reads config and
    starts execution."
   [& args]
-  (let [[opts args banner] (get-cli args)
-        config             (read-config (:path opts))
+  (let [debug?             (= (System/getProperty "bundes.debug") "true")
+        [opts args banner] (get-cli args)
         help?              (:help opts)]
-
-    (start-logging! (:logging config))
 
     (when help?
       (println banner)
       (System/exit 0))
 
-    (cluster/run-election (:cluster config) (make-service config))
-    (info "back from election")
+    (let [config (read-config (:path opts))
+          system (atom (make-system config))]
 
-;;    (Thread/sleep 5000)
-    ))
+      (start-logging! (:logging config))
+      (swap! system com/start-system)
+
+      (try
+
+        (with-handler :term
+          (info "caught SIGTERM, quitting")
+          (swap! system com/stop-system)
+          (info "all components shut down")
+          (System/exit 0))
+
+        (with-handler :hup
+          (info "caught SIGHUP, quitting")
+          (swap! system com/stop-system)
+          (info "all components shut down")
+          (System/exit 0))
+
+        (reporter/instrument! (:reporter @system) [:bundes])
+        (framework/process! (:framework @system))
+
+
+        (info "main task finished, stopping system")
+        (swap! system com/stop-system)
+        (System/exit 0)
+
+        (catch Throwable t
+          (error t)
+          (if debug?
+            (throw t)
+            (System/exit 1)))))))
