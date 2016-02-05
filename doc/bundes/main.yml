@@ -1,6 +1,0 @@
-mesos: zk://localhost:2181/mesos
-registry: zk://localhost:2181/bundes
-unit-dir: units/
-logging:
-  level: info
-  console: true

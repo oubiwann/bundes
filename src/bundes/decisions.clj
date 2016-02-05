@@ -11,10 +11,12 @@
   [old new k]
   (let [old                 (get old k {:status :stop})
         new                 (get new k {:status :stop})]
-    (match [(:type old) (:type new)
+    (match [(:type old)
+            (:type new)
             (= (:runtime old) (:runtime new))
             (= (:schedule old) (:schedule new))
-            (:status old) (:status new)]
+            (:status old)
+            (:status new)]
 
            ;; Basic status changes
            [_ _ _ _       :stop :stop]  []
