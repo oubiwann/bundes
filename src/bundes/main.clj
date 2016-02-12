@@ -37,6 +37,7 @@
             [bundes.ticker              :as ticker]
             [spootnik.reporter          :as reporter]
             [bundes.engine              :as engine]
+            [signal.handler             :refer [with-handler]]
             [clojure.tools.logging      :refer [info debug error]]
             [unilog.config              :refer [start-logging!]]
             [clojure.tools.cli          :refer [cli]]))
@@ -97,12 +98,6 @@
     :ticker    [:reporter]
     :framework [:reporter :db]}))
 
-(defmacro with-handler
-  [signal & body]
-  `(sun.misc.Signal/handle
-    (sun.misc.Signal. (-> ~signal name .toUpperCase))
-    (proxy [sun.misc.SignalHandler] [] (handle [sig#] ~@body))))
-
 (defn -main
   "Executable entry point, parse options, reads config and
    starts execution."
@@ -122,7 +117,6 @@
       (swap! system com/start-system)
 
       (try
-
         (with-handler :term
           (info "caught SIGTERM, quitting")
           (swap! system com/stop-system)

@@ -17,6 +17,7 @@
                  [spootnik/net                         "0.2.8"]
                  [spootnik/reporter                    "0.1.3"]
                  [spootnik/uncaught                    "0.5.3"]
+                 [spootnik/signal                      "0.2.0"]
                  [riemann-clojure-client               "0.4.1"
                   :exclusions [com.aphyr/riemann-java-client]]
                  [metrics-clojure                      "2.6.1"]
