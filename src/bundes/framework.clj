@@ -105,7 +105,7 @@
   (let [tinfos (map unit->task-info units)]
     (if-let [tasks (allocate-naively offers tinfos)]
       (doseq [[offer-id tasks] (group-by :offer-id tasks)]
-        (info "starting tasks on offer" (-> offer-id :value) ":" (pr-str tasks))
+        (info "starting" (count tasks) "tasks on offer" (-> offer-id :value))
         (doseq [{:keys [task-id] :as task} tasks]
           ;; You can view this as a sort of optimistic update
           (db/set-task! db task-id {:state :starting}))
@@ -116,12 +116,16 @@
 (defmethod update-state :resource-offers
   [state payload]
   (info "updating offers with" (count (:offers payload)) "new offers")
-  (debug "offers: " (pr-str (:offers payload)))
   (assoc state :offers (:offers payload)))
 
 (defmethod update-state :stop
   [state payload]
   (info "framework stopped")
+  (doseq [unit (:units payload)]
+    (info "will now stop unit" (:id unit))
+    (doseq [task (:tasks unit)]
+      (info "killing task" (:value task))
+      (sched/kill-task! (:driver state) task)))
   state)
 
 (defmethod update-state :offer-rescinded
