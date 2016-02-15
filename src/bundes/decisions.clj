@@ -45,8 +45,9 @@
                                          {:action :sched-add :unit   new}]
 
            ;; We really should not get this far
-           [_ _ _ _ _ _]                (throw (ex-info "unhandled case"
-                                                        {:id [old new]})))))
+           [_ _ _ _ _ _]                [{:action  :log
+                                          :level   :info
+                                          :message "unhandled case"}])))
 
 (defn add-map
   "If a new unit is in start state, return

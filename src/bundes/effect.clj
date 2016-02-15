@@ -5,12 +5,16 @@
    - Effects are maps
    - They contain "
   (:require [schema.core           :as s]
-            [clojure.tools.logging :refer [info warn]]))
+            [clojure.tools.logging :refer [log info warn]]))
 
 (defmulti perform-effect
   "Open protocol for perform-effect.
    Expects maps and dispatches on :action key."
   :action)
+
+(defmethod perform-effect :log
+  [{:keys [level message]}]
+  (log level message))
 
 (defmethod perform-effect :default
   [{:keys [action] :as effect}]
