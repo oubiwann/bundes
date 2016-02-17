@@ -10,6 +10,11 @@
             [clojure.core.async         :refer [chan <! go] :as a]
             [clojure.tools.logging      :refer [debug info error]]))
 
+(defn adapt-retry
+  "Increase retry times"
+  [n]
+  (if n (* n 2) 2000))
+
 (defmethod perform-effect :stop
   [{:keys [framework units]}]
   (info "asked to stop units" (mapv :id units))
@@ -101,7 +106,7 @@
   state)
 
 (defmethod update-state :start
-  [{:keys [db driver offers] :as state} {:keys [units] :as payload}]
+  [{:keys [framework db driver offers] :as state} {:keys [retry units] :as payload}]
   (let [tinfos (map unit->task-info units)]
     (if-let [tasks (allocate-naively offers tinfos)]
       (doseq [[offer-id tasks] (group-by :offer-id tasks)]
@@ -110,7 +115,11 @@
           ;; You can view this as a sort of optimistic update
           (db/set-task! db task-id {:state :starting}))
         (sched/launch-tasks! driver offer-id tasks))
-      (error "no match found for workload" (pr-str units))))
+      (a/go
+        (let [retry (or retry 2000)]
+          (error "no match found for units:" (mapv :id units))
+          (a/<! (a/timeout retry))
+          (a/>! (:input framework) (update payload :retry adapt-retry))))))
   state)
 
 (defmethod update-state :resource-offers
